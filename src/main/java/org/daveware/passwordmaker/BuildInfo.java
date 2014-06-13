@@ -25,6 +25,7 @@ import java.util.Properties;
  *
  * @author Dave Marotti
  */
+@SuppressWarnings("UnusedDeclaration")
 public class BuildInfo {
     String version = "Internal";
     String buildDate = "Internal";
@@ -40,12 +41,12 @@ public class BuildInfo {
             version = prop.getProperty("Implementation-Version");
             buildDate = prop.getProperty("Built-On");
             buildTime = prop.getProperty("Built-At");
-        } catch (Exception ee) {
+        } catch (Exception ignored) {
         } finally {
             if (in != null) {
                 try {
                     in.close();
-                } catch (Exception eee) {
+                } catch (Exception ignored) {
                 }
             }
         }
