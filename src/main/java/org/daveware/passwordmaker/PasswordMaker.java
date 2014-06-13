@@ -33,8 +33,9 @@ import java.util.regex.Pattern;
  * @author Dave Marotti
  */
 public class PasswordMaker {
-    private static Pattern urlRegex = Pattern.compile("([^:\\/\\/]*:\\/\\/)?([^:\\/]*)([^#]*).*");
 
+    private static Pattern urlRegex = Pattern.compile("([^:\\/\\/]*:\\/\\/)?([^:\\/]*)([^#]*).*");
+    private static String CRYPTO_PROVIDER = "BC";
     private Account verificationAccount = createVerificationAccount();
 
     private static Account createVerificationAccount() {
@@ -47,6 +48,11 @@ public class PasswordMaker {
         account.setSuffix("");
         account.setLeetType(LeetType.NONE);
         return account;
+    }
+
+
+    public static void setDefaultCryptoProvider(String provider) {
+        CRYPTO_PROVIDER = provider;
     }
 
     /**
@@ -440,7 +446,7 @@ public class PasswordMaker {
             if (account.isHmac()) {
                 Mac mac;
                 String algoName = "HMAC" + account.getAlgorithm().getName();
-                mac = Mac.getInstance(algoName, "BC");
+                mac = Mac.getInstance(algoName, CRYPTO_PROVIDER);
 
 
                 mac.init(new SecretKeySpec(masterPasswordBytes.getData(), algoName));
@@ -448,7 +454,7 @@ public class PasswordMaker {
                 mac.update(dataBytes.getData());
                 digestChars = new SecureCharArray(mac.doFinal());
             } else {
-                MessageDigest md = MessageDigest.getInstance(account.getAlgorithm().getName(), "BC");
+                MessageDigest md = MessageDigest.getInstance(account.getAlgorithm().getName(), CRYPTO_PROVIDER);
                 digestChars = new SecureCharArray(md.digest(dataBytes.getData()));
             }
 
