@@ -29,19 +29,34 @@ import java.util.regex.Pattern;
 
 /**
  * This class is used to generate passwords from a master password and an account.
+ *
  * @author Dave Marotti
  */
 public class PasswordMaker {
-	private static Pattern urlRegex = Pattern.compile("([^:\\/\\/]*:\\/\\/)?([^:\\/]*)([^#]*).*");
+    private static Pattern urlRegex = Pattern.compile("([^:\\/\\/]*:\\/\\/)?([^:\\/]*)([^#]*).*");
+
+    private Account verificationAccount = createVerificationAccount();
+
+    private static Account createVerificationAccount() {
+        Account account = new Account();
+        account.setCharacterSet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        account.setAlgorithm(AlgorithmType.SHA256);
+        account.setLength(3);
+        account.setModifier("");
+        account.setPrefix("");
+        account.setSuffix("");
+        account.setLeetType(LeetType.NONE);
+        return account;
+    }
     /**
      * Maps an array of characters to another character set.
-     * 
+     * <p/>
      * This is the magic which allows an encrypted password to be mapped into a
      * a specific character set.
-     * 
-     * @param input The array of characters to map.
+     *
+     * @param input    The array of characters to map.
      * @param encoding The list of characters to map to.
-     * @param trim Whether to trim leading zeros ... I think.
+     * @param trim     Whether to trim leading zeros ... I think.
      * @return The mapped string.
      * @throws Exception On odd length!?
      */
@@ -55,7 +70,7 @@ public class PasswordMaker {
         int remainders_count = 0;
         int dividend_length;
         int i, j;
-        
+
         int outputPosition = 0;
         SecureCharArray output = new SecureCharArray();
 
@@ -122,9 +137,9 @@ public class PasswordMaker {
             }
         }
 
-        if(output.size() < full_length)
+        if (output.size() < full_length)
             output.resize(full_length, false);
-        
+
         for (i = full_length - 1; i >= 0; i--) {
             output.setCharAt(outputPosition++, encoding.charAt(remainders[i]));
         }
@@ -134,149 +149,137 @@ public class PasswordMaker {
 
     /**
      * Calculates the strength of a password.
+     *
      * @return An integer value from 0 to 100.
      */
     public static double calcPasswordStrength(SecureCharArray pw) {
         ArrayList<Character> uniques = new ArrayList<Character>();
         int pwLength = pw.size();
         int i, j;
-        
-        if(pwLength<=2)
+
+        if (pwLength <= 2)
             return 0;
-        
+
         // Find character frequency
-        for(i=0; i<pwLength; i++) {
-            for(j=0; j<uniques.size(); j++) {
-                if(i==j)
+        for (i = 0; i < pwLength; i++) {
+            for (j = 0; j < uniques.size(); j++) {
+                if (i == j)
                     continue;
-                if(pw.getCharAt(i) == uniques.get(j).charValue())
+                if (pw.getCharAt(i) == uniques.get(j))
                     break;
             }
-            if(j==uniques.size())
+            if (j == uniques.size())
                 uniques.add(pw.getCharAt(i));
         }
-        
-        double r0 = ((double)uniques.size()) / ((double)pwLength);
-        if(uniques.size()==1)
+
+        double r0 = ((double) uniques.size()) / ((double) pwLength);
+        if (uniques.size() == 1)
             r0 = 0;
-        
+
         // length of the password - 1pt per char over 5, up to 15 for 10 pts total
-        double r1 = (double)pwLength;
-        if(r1 >= 15)
+        double r1 = (double) pwLength;
+        if (r1 >= 15)
             r1 = 10;
-        else if(r1 < 5)
+        else if (r1 < 5)
             r1 = -5;
         else
             r1 -= 5;
-        
+
         double quarterLen = Math.round(((double) pwLength) / 4.0);
         double num = 0;
-        for(i=0; i<pwLength; i++)
-            if(!Character.isDigit(pw.getCharAt(i)))
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isDigit(pw.getCharAt(i)))
                 num++;
         num = pwLength - num;
-        double c = num > quarterLen*2.0 ? quarterLen : Math.abs(quarterLen - num);
+        double c = num > quarterLen * 2.0 ? quarterLen : Math.abs(quarterLen - num);
         double r2 = 1.0 - (c / quarterLen);
-        
+
         // ratio of symbols in the password
         num = 0;
-        for(i=0; i<pwLength; i++)
-            if(Character.isLetterOrDigit(pw.getCharAt(i)) || pw.getCharAt(i)=='_')
+        for (i = 0; i < pwLength; i++)
+            if (Character.isLetterOrDigit(pw.getCharAt(i)) || pw.getCharAt(i) == '_')
                 num++;
         num = pwLength - num;
-        c = num > quarterLen*2 ? quarterLen : Math.abs(quarterLen - num);
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
         double r3 = 1.0 - (c / quarterLen);
 
         // ratio of uppercase in the password
         num = 0;
-        for(i=0; i<pwLength; i++)
-            if(!Character.isUpperCase(pw.getCharAt(i)))
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isUpperCase(pw.getCharAt(i)))
                 num++;
         num = pwLength - num;
-        c = num > quarterLen*2 ? quarterLen : Math.abs(quarterLen - num);
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
         double r4 = 1.0 - (c / quarterLen);
 
         // ratio of lower case in the password
         num = 0;
-        for(i=0; i<pwLength; i++)
-            if(!Character.isLowerCase(pw.getCharAt(i)))
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isLowerCase(pw.getCharAt(i)))
                 num++;
         num = pwLength - num;
-        c = num > quarterLen*2 ? quarterLen : Math.abs(quarterLen - num);
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
         double r5 = 1.0 - (c / quarterLen);
 
-        double pwStrength = (((r0+r2+r3+r4+r5) / 5.0f) * 100.0f) + r1;
-        
-        if(pwStrength < 0.0f)
+        double pwStrength = (((r0 + r2 + r3 + r4 + r5) / 5.0f) * 100.0f) + r1;
+
+        if (pwStrength < 0.0f)
             pwStrength = 0.0f;
-        if(pwStrength > 100.0f)
+        if (pwStrength > 100.0f)
             pwStrength = 100.0f;
-        
+
         return pwStrength;
     }
-    
-    
-	public final String getModifiedInputText(final String inputText, final Account account) {
-		final Set<UrlComponents> uriComponents = account.getUrlComponents();
-		if (uriComponents.isEmpty()) {
-		    if(account.isDefault())
-		        return "";
-		    else
-		        return account.getUrl();
-		}
-		Matcher matcher = urlRegex.matcher(inputText);
-		if (!matcher.matches())
-			return inputText;
-		String protocol = matcher.group(1);
-		String domainText = matcher.group(2);
-		String portPath = matcher.group(3);
-		if ( protocol == null ) protocol = "";
-		if ( domainText == null ) domainText = "";
-		if ( portPath == null ) portPath = "";
-		
-		StringBuilder retVal = new StringBuilder(inputText.length());
-		if (uriComponents.contains(UrlComponents.Protocol) && protocol.length() > 0) {
-			retVal.append(protocol);
-		}
-		if (domainText != null) {
-			final String subDomain;
-			int dnDot = domainText.lastIndexOf('.');
-			dnDot = domainText.lastIndexOf('.', dnDot - 1);
-			if (dnDot != -1) {
-				subDomain = domainText.substring(0, dnDot);
-				domainText = domainText.substring(dnDot + 1);
-			} else {
-				subDomain = "";
-			}
-			final boolean hasSubDomain = uriComponents
-					.contains(UrlComponents.Subdomain) && dnDot != -1;
-			if (hasSubDomain) {
-				retVal.append(subDomain);
-			}
-			if (uriComponents.contains(UrlComponents.Domain)) {
-				if (hasSubDomain)
-					retVal.append('.');
-				retVal.append(domainText);
-			}
-		}
-		if (uriComponents.contains(UrlComponents.PortPathAnchorQuery)
-				&& portPath.length() > 0) {
-			retVal.append(portPath);
-		}
-		return retVal.toString();
-	}
-    
+
+    public final String getModifiedInputText(final String inputText, final Account account) {
+        final Set<UrlComponents> uriComponents = account.getUrlComponents();
+        if (uriComponents.isEmpty()) {
+            if (account.isDefault())
+                return "";
+            else
+                return account.getUrl();
+        }
+        Matcher matcher = urlRegex.matcher(inputText);
+        if (!matcher.matches())
+            return inputText;
+        String protocol = matcher.group(1);
+        String domainText = matcher.group(2);
+        String portPath = matcher.group(3);
+        if (protocol == null) protocol = "";
+        if (domainText == null) domainText = "";
+        if (portPath == null) portPath = "";
+
+        StringBuilder retVal = new StringBuilder(inputText.length());
+        if (uriComponents.contains(UrlComponents.Protocol) && protocol.length() > 0) {
+            retVal.append(protocol);
+        }
+        final ParsedDomain domain = new ParsedDomain(domainText);
+        final boolean hasSubDomain = uriComponents.contains(UrlComponents.Subdomain) && domain.hasSubDomains();
+        if (hasSubDomain) {
+            retVal.append(domain.getSubdomains());
+        }
+        if (uriComponents.contains(UrlComponents.Domain) && domain.hasDomain()) {
+            if (hasSubDomain) retVal.append(".");
+            retVal.append(domain.getDomain());
+        }
+        if (uriComponents.contains(UrlComponents.PortPathAnchorQuery)
+                && portPath.length() > 0) {
+            retVal.append(portPath);
+        }
+        return retVal.toString();
+    }
+
     /**
      * Generates a hash of the master password with settings from the account.
+     *
      * @param masterPassword The password to use as a key for the various algorithms.
-     * @param account The account with the specific settings for the hash.
-     * @param inputText The text to use as the input into the password maker algorithm
+     * @param account        The account with the specific settings for the hash.
+     * @param inputText      The text to use as the input into the password maker algorithm
      * @return A SecureCharArray with the hashed data.
      * @throws Exception if something bad happened.
      */
     public SecureCharArray makePassword(SecureCharArray masterPassword, Account account, final String inputText)
-            throws Exception
-    {
+            throws Exception {
         LeetLevel leetLevel = account.getLeetLevel();
         //int count = 0;
         int length = account.getLength();
@@ -284,13 +287,13 @@ public class PasswordMaker {
         SecureCharArray data = null;
 
         try {
-            if(account.getCharacterSet().length() < 2)
+            if (account.getCharacterSet().length() < 2)
                 throw new Exception("Account contains a character set that is too short");
 
-            data = new SecureCharArray(getModifiedInputText(inputText, account) + account.getUsername() + account.getModifier() );
+            data = new SecureCharArray(getModifiedInputText(inputText, account) + account.getUsername() + account.getModifier());
 
             // Use leet before hashing
-            if(account.getLeetType()== LeetType.BEFORE || account.getLeetType()== LeetType.BOTH) {
+            if (account.getLeetType() == LeetType.BEFORE || account.getLeetType() == LeetType.BOTH) {
                 LeetEncoder.leetConvert(leetLevel, masterPassword);
                 LeetEncoder.leetConvert(leetLevel, data);
             }
@@ -299,12 +302,12 @@ public class PasswordMaker {
             output = hashTheData(masterPassword, data, account);
 
             // Use leet after hashing
-            if(account.getLeetType()== LeetType.AFTER || account.getLeetType()== LeetType.BOTH) {
+            if (account.getLeetType() == LeetType.AFTER || account.getLeetType() == LeetType.BOTH) {
                 LeetEncoder.leetConvert(leetLevel, output);
             }
 
             // Apply the prefix
-            if(account.getPrefix().length() > 0) {
+            if (account.getPrefix().length() > 0) {
                 SecureCharArray prefix = new SecureCharArray(account.getPrefix());
                 output.prepend(prefix);
                 prefix.erase();
@@ -312,12 +315,12 @@ public class PasswordMaker {
 
             // Handle the suffix
             output.resize(length, true);
-            if(account.getSuffix().length() > 0) {
+            if (account.getSuffix().length() > 0) {
                 SecureCharArray suffix = new SecureCharArray(account.getSuffix());
 
                 // If the suffix is larger than the entire password (not smart), then
                 // just replace the output with a section of the suffix that fits
-                if(length < suffix.size()) {
+                if (length < suffix.size()) {
                     output.replace(suffix);
                     output.resize(length, true);
                 }
@@ -329,63 +332,64 @@ public class PasswordMaker {
 
                 suffix.erase();
             }
-        }
-        catch(Exception e) {
-            if(output!=null)
+        } catch (Exception e) {
+            if (output != null)
                 output.erase();
             throw e;
-        }
-        finally {
+        } finally {
             // not really needed... but here for completeness
-            if(data!=null)
+            if (data != null)
                 data.erase();
         }
-        
+
         return output;
     }
-    
+
     /**
      * Generates a hash of the master password with settings from the account.
+     *
      * @param masterPassword The password to use as a key for the various algorithms.
-     * @param account The account with the specific settings for the hash. Uses account.getUrl() as the inputText
+     * @param account        The account with the specific settings for the hash. Uses account.getUrl() as the inputText
      * @return A SecureCharArray with the hashed data.
      * @throws Exception if something bad happened.
      */
     public SecureCharArray makePassword(SecureCharArray masterPassword, Account account)
-            throws Exception
-    {
-    	return makePassword(masterPassword, account, account.getUrl());
+            throws Exception {
+        return makePassword(masterPassword, account, account.getUrl());
     }
+
+    public SecureCharArray generateVerificationCode(SecureCharArray masterPassword) throws Exception {
+        return makePassword(masterPassword, verificationAccount, "");
+    }
+
     /**
      * Intermediate step of generating a password. Performs constant hashing until
      * the resulting hash is long enough.
-     * 
+     *
      * @param masterPassword You should know by now.
-     * @param data Not much has changed.
-     * @param account A donut?
+     * @param data           Not much has changed.
+     * @param account        A donut?
      * @return A suitable hash.
      * @throws Exception if we ran out of donuts.
      */
     private SecureCharArray hashTheData(SecureCharArray masterPassword, SecureCharArray data, Account account)
-            throws Exception
-    {
-        SecureCharArray output                  = new SecureCharArray();
-        SecureCharArray secureIteration         = new SecureCharArray();
-        SecureCharArray intermediateOutput      = null;
-        int count   = 0;
-        int length  = account.getLength();
-        
+            throws Exception {
+        final SecureCharArray output = new SecureCharArray();
+        final SecureCharArray secureIteration = new SecureCharArray();
+        SecureCharArray intermediateOutput = null;
+        int count = 0;
+        final int length = account.getLength();
+
         try {
-            while(output.size() < length) {
-                if(count==0) {
+            while (output.size() < length) {
+                if (count == 0) {
                     intermediateOutput = runAlgorithm(masterPassword, data, account);
-                }
-                else {
+                } else {
                     // add ye bit'o chaos
                     secureIteration.replace(masterPassword);
                     secureIteration.append(new SecureCharArray("\n"));
                     secureIteration.append(new SecureCharArray(Integer.toString(count)));
-                    
+
                     intermediateOutput = runAlgorithm(secureIteration, data, account);
 
                     secureIteration.erase();
@@ -395,33 +399,30 @@ public class PasswordMaker {
 
                 count++;
             }
-        } catch(Exception e) {
-            if(output!=null)
-                output.erase();
+        } catch (Exception e) {
+            output.erase();
             throw e;
         } finally {
-            if(intermediateOutput!=null)
+            if (intermediateOutput != null)
                 intermediateOutput.erase();
-            if(secureIteration!=null)
-                secureIteration.erase();
+            secureIteration.erase();
         }
-        
+
         return output;
     }
-    
+
     /**
      * This performs the actual hashing. It obtains an instance of the hashing algorithm
      * and feeds in the necessary data.
-     * 
+     *
      * @param masterPassword The master password to use as a key.
-     * @param data The data to be hashed.
-     * @param account The account with the hash settings to use.
+     * @param data           The data to be hashed.
+     * @param account        The account with the hash settings to use.
      * @return A SecureCharArray of the hash.
      * @throws Exception if something bad happened.
      */
     private SecureCharArray runAlgorithm(SecureCharArray masterPassword, SecureCharArray data, Account account)
-            throws Exception
-    {
+            throws Exception {
         SecureCharArray output = null;
         SecureCharArray digestChars = null;
         SecureByteArray masterPasswordBytes = null;
@@ -431,7 +432,7 @@ public class PasswordMaker {
             masterPasswordBytes = new SecureByteArray(masterPassword.getData());
             dataBytes = new SecureByteArray(data.getData());
 
-            if (account.isHmac() == false) {
+            if (!account.isHmac()) {
                 dataBytes.prepend(masterPasswordBytes);
             }
 
@@ -439,9 +440,8 @@ public class PasswordMaker {
                 Mac mac;
                 String algoName = "HMAC" + account.getAlgorithm().getName();
                 mac = Mac.getInstance(algoName, "BC");
-                
-                
-                
+
+
                 mac.init(new SecretKeySpec(masterPasswordBytes.getData(), algoName));
                 mac.reset();
                 mac.update(dataBytes.getData());
@@ -453,19 +453,19 @@ public class PasswordMaker {
 
 
             output = rstr2any(digestChars.getData(), account.getCharacterSet(), account.isTrim());
-        } catch(Exception e) {
-            if(output!=null)
+        } catch (Exception e) {
+            if (output != null)
                 output.erase();
             throw e;
         } finally {
-            if(masterPasswordBytes!=null)
+            if (masterPasswordBytes != null)
                 masterPasswordBytes.erase();
-            if(dataBytes!=null)
+            if (dataBytes != null)
                 dataBytes.erase();
-            if(digestChars!=null)
+            if (digestChars != null)
                 digestChars.erase();
         }
-        
+
         return output;
     }
 }
