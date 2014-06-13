@@ -1,4 +1,6 @@
+target
 bin
 tmp
 *.iml
 .idea
+dependency-reduced-pom.xml

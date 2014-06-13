@@ -8,5 +8,30 @@
     <artifactId>passwordmaker-je-lib</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.46</version>
+            <!-- This must be TEST cause if its deployed with the jar
+                 it may cause problems with other system's crypto libs
+                 The application using this lib would have to include bouncycastle
+                 if they need its crypto support.  This library doesn't use any
+                 bouncy castle's api directly, just through the javax.crypto
+                 api calls.
+            -->
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
