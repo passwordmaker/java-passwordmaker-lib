@@ -32,67 +32,67 @@ public class LeetLevel implements Comparable<LeetLevel> {
     public static final LeetLevel LEVEL7 = new LeetLevel(7);
     public static final LeetLevel LEVEL8 = new LeetLevel(8);
     public static final LeetLevel LEVEL9 = new LeetLevel(9);
-    
+
     private static final LeetLevel[] LEVELS = {
-        LEVEL1, LEVEL2, LEVEL3, LEVEL4, LEVEL5, LEVEL6, LEVEL7, LEVEL8, LEVEL9
+            LEVEL1, LEVEL2, LEVEL3, LEVEL4, LEVEL5, LEVEL6, LEVEL7, LEVEL8, LEVEL9
     };
-    
+
     private int level = 1;
-    
+
     private LeetLevel() {
     }
-    
+
     private LeetLevel(int l) {
         level = l;
     }
-    
-    @Override
-    public String toString() {
-        return Integer.toString(level);
-    }
-    
-    public int getLevel() {
-        return level;
-    }
-    
+
     public static LeetLevel[] getLevels() {
         return LEVELS;
     }
-    
+
     public static LeetLevel fromInt(int i) {
-        if(i>=LEVEL1.getLevel() && i<=LEVEL9.getLevel())
-            return LEVELS[i-1];
+        if (i >= LEVEL1.getLevel() && i <= LEVEL9.getLevel())
+            return LEVELS[i - 1];
         return LEVELS[0];
     }
 
-    public int compareTo(LeetLevel o) {
-        if(level < o.level)
-            return -1;
-        if(level > o.level)
-            return 1;
-        return 0;
-    }
-    
     /**
      * Converts a string to a leet level.
+     *
      * @param str The string to parse the leet level from.
      * @return The leet level if valid.
      * @throws Exception upon invalid level.
      */
     public static LeetLevel fromString(String str)
-        throws Exception
-    {
-        if(str.length()==0)
+            throws Exception {
+        if (str.length() == 0)
             return LEVEL1;
-        
+
         try {
             int i = Integer.parseInt(str);
-            if(i>=1 && i<=LEVELS.length)
-                return LEVELS[i-1];
-        } catch(Exception e) {
+            if (i >= 1 && i <= LEVELS.length)
+                return LEVELS[i - 1];
+        } catch (Exception e) {
         }
 
         String exceptionStr = String.format("Invalid LeetLevel '%1s', valid values are '1' to '9'", str);
         throw new Exception(exceptionStr);
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(level);
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int compareTo(LeetLevel o) {
+        if (level < o.level)
+            return -1;
+        if (level > o.level)
+            return 1;
+        return 0;
     }
 }

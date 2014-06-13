@@ -20,16 +20,16 @@ package org.daveware.passwordmaker;
 /**
  * An exception which will be thrown when an incompatibility with the original
  * PasswordMaker is detected.
- * 
+ *
  * @author Dave Marotti
  */
 public class IncompatibleException extends Exception {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4636133656213168485L;
+     *
+     */
+    private static final long serialVersionUID = -4636133656213168485L;
 
-	public IncompatibleException(String str) {
+    public IncompatibleException(String str) {
         super(str);
     }
 }

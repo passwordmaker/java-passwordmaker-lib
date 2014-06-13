@@ -19,6 +19,7 @@ package org.daveware.passwordmaker;
 
 /**
  * Some preset encodings which can be used.
+ *
  * @author Dave Marotti
  */
 public class CharacterSets {
@@ -30,11 +31,11 @@ public class CharacterSets {
     public static String NUMERIC = "0123456789";
 
     public static String[] CHARSETS = {
-        BASE_93_SET,
-        ALPHANUMERIC,
-        ALPHA,
-        HEX,
-        NUMERIC,
-        SPECIAL_CHARS
+            BASE_93_SET,
+            ALPHANUMERIC,
+            ALPHA,
+            HEX,
+            NUMERIC,
+            SPECIAL_CHARS
     };
 }

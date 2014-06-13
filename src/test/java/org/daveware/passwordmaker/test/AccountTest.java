@@ -18,7 +18,7 @@ public class AccountTest {
         copy.copySettings(orig);
         copy.clearUrlComponents();
         Assert.assertFalse(orig.getUrlComponents().isEmpty());
-        
+
         // Verify that copySettings works when the set of components is empty.
         copy.addUrlComponent(UrlComponents.Protocol);
         orig.clearUrlComponents();

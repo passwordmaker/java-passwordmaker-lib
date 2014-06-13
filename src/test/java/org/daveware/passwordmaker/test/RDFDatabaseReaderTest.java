@@ -29,11 +29,11 @@ import java.security.Security;
 
 /**
  * Runs tests against the RDFDatabaseReader class.
- * 
+ *
  * @author Dave Marotti
  */
 public class RDFDatabaseReaderTest {
-    
+
     public RDFDatabaseReaderTest() {
     }
 
@@ -44,12 +44,12 @@ public class RDFDatabaseReaderTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
         Security.addProvider(new BouncyCastleProvider());
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -67,7 +67,7 @@ public class RDFDatabaseReaderTest {
 
     @Test
     public void testReadAccount() throws Exception {
-    	RDFDatabaseReader reader = new RDFDatabaseReader();
+        RDFDatabaseReader reader = new RDFDatabaseReader();
         InputStream is = getClass().getResourceAsStream("sample_account.rdf");
         Account acc = reader.deserializeAccount(is);
         Assert.assertEquals("Yahoo.com", acc.getName());
@@ -75,7 +75,7 @@ public class RDFDatabaseReaderTest {
         Assert.assertEquals("Another Modifier", acc.getModifier());
         Assert.assertEquals("Im a description", acc.getDesc());
     }
-    
+
     /**
      * Test of getExtension method, of class RDFDatabaseReader.
      */

@@ -19,11 +19,15 @@ package org.daveware.passwordmaker;
 
 /**
  * Represents an object which wishes to receive events when the database changes.
+ *
  * @author Dave Marotti
  */
 public interface DatabaseListener {
     public void accountAdded(Account parent, Account account);
+
     public void accountRemoved(Account parent, Account account);
+
     public void accountChanged(Account account);
+
     public void dirtyStatusChanged(boolean status);
 }

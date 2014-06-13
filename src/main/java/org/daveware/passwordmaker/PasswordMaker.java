@@ -48,6 +48,91 @@ public class PasswordMaker {
         account.setLeetType(LeetType.NONE);
         return account;
     }
+
+    /**
+     * Calculates the strength of a password.
+     *
+     * @return An integer value from 0 to 100.
+     */
+    public static double calcPasswordStrength(SecureCharArray pw) {
+        ArrayList<Character> uniques = new ArrayList<Character>();
+        int pwLength = pw.size();
+        int i, j;
+
+        if (pwLength <= 2)
+            return 0;
+
+        // Find character frequency
+        for (i = 0; i < pwLength; i++) {
+            for (j = 0; j < uniques.size(); j++) {
+                if (i == j)
+                    continue;
+                if (pw.getCharAt(i) == uniques.get(j))
+                    break;
+            }
+            if (j == uniques.size())
+                uniques.add(pw.getCharAt(i));
+        }
+
+        double r0 = ((double) uniques.size()) / ((double) pwLength);
+        if (uniques.size() == 1)
+            r0 = 0;
+
+        // length of the password - 1pt per char over 5, up to 15 for 10 pts total
+        double r1 = (double) pwLength;
+        if (r1 >= 15)
+            r1 = 10;
+        else if (r1 < 5)
+            r1 = -5;
+        else
+            r1 -= 5;
+
+        double quarterLen = Math.round(((double) pwLength) / 4.0);
+        double num = 0;
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isDigit(pw.getCharAt(i)))
+                num++;
+        num = pwLength - num;
+        double c = num > quarterLen * 2.0 ? quarterLen : Math.abs(quarterLen - num);
+        double r2 = 1.0 - (c / quarterLen);
+
+        // ratio of symbols in the password
+        num = 0;
+        for (i = 0; i < pwLength; i++)
+            if (Character.isLetterOrDigit(pw.getCharAt(i)) || pw.getCharAt(i) == '_')
+                num++;
+        num = pwLength - num;
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
+        double r3 = 1.0 - (c / quarterLen);
+
+        // ratio of uppercase in the password
+        num = 0;
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isUpperCase(pw.getCharAt(i)))
+                num++;
+        num = pwLength - num;
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
+        double r4 = 1.0 - (c / quarterLen);
+
+        // ratio of lower case in the password
+        num = 0;
+        for (i = 0; i < pwLength; i++)
+            if (!Character.isLowerCase(pw.getCharAt(i)))
+                num++;
+        num = pwLength - num;
+        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
+        double r5 = 1.0 - (c / quarterLen);
+
+        double pwStrength = (((r0 + r2 + r3 + r4 + r5) / 5.0f) * 100.0f) + r1;
+
+        if (pwStrength < 0.0f)
+            pwStrength = 0.0f;
+        if (pwStrength > 100.0f)
+            pwStrength = 100.0f;
+
+        return pwStrength;
+    }
+
     /**
      * Maps an array of characters to another character set.
      * <p/>
@@ -145,90 +230,6 @@ public class PasswordMaker {
         }
 
         return output;
-    }
-
-    /**
-     * Calculates the strength of a password.
-     *
-     * @return An integer value from 0 to 100.
-     */
-    public static double calcPasswordStrength(SecureCharArray pw) {
-        ArrayList<Character> uniques = new ArrayList<Character>();
-        int pwLength = pw.size();
-        int i, j;
-
-        if (pwLength <= 2)
-            return 0;
-
-        // Find character frequency
-        for (i = 0; i < pwLength; i++) {
-            for (j = 0; j < uniques.size(); j++) {
-                if (i == j)
-                    continue;
-                if (pw.getCharAt(i) == uniques.get(j))
-                    break;
-            }
-            if (j == uniques.size())
-                uniques.add(pw.getCharAt(i));
-        }
-
-        double r0 = ((double) uniques.size()) / ((double) pwLength);
-        if (uniques.size() == 1)
-            r0 = 0;
-
-        // length of the password - 1pt per char over 5, up to 15 for 10 pts total
-        double r1 = (double) pwLength;
-        if (r1 >= 15)
-            r1 = 10;
-        else if (r1 < 5)
-            r1 = -5;
-        else
-            r1 -= 5;
-
-        double quarterLen = Math.round(((double) pwLength) / 4.0);
-        double num = 0;
-        for (i = 0; i < pwLength; i++)
-            if (!Character.isDigit(pw.getCharAt(i)))
-                num++;
-        num = pwLength - num;
-        double c = num > quarterLen * 2.0 ? quarterLen : Math.abs(quarterLen - num);
-        double r2 = 1.0 - (c / quarterLen);
-
-        // ratio of symbols in the password
-        num = 0;
-        for (i = 0; i < pwLength; i++)
-            if (Character.isLetterOrDigit(pw.getCharAt(i)) || pw.getCharAt(i) == '_')
-                num++;
-        num = pwLength - num;
-        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
-        double r3 = 1.0 - (c / quarterLen);
-
-        // ratio of uppercase in the password
-        num = 0;
-        for (i = 0; i < pwLength; i++)
-            if (!Character.isUpperCase(pw.getCharAt(i)))
-                num++;
-        num = pwLength - num;
-        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
-        double r4 = 1.0 - (c / quarterLen);
-
-        // ratio of lower case in the password
-        num = 0;
-        for (i = 0; i < pwLength; i++)
-            if (!Character.isLowerCase(pw.getCharAt(i)))
-                num++;
-        num = pwLength - num;
-        c = num > quarterLen * 2 ? quarterLen : Math.abs(quarterLen - num);
-        double r5 = 1.0 - (c / quarterLen);
-
-        double pwStrength = (((r0 + r2 + r3 + r4 + r5) / 5.0f) * 100.0f) + r1;
-
-        if (pwStrength < 0.0f)
-            pwStrength = 0.0f;
-        if (pwStrength > 100.0f)
-            pwStrength = 100.0f;
-
-        return pwStrength;
     }
 
     public final String getModifiedInputText(final String inputText, final Account account) {

@@ -22,7 +22,7 @@ import java.util.Properties;
 
 /**
  * Class to load and store the build information from build-info.properties.
- * 
+ *
  * @author Dave Marotti
  */
 public class BuildInfo {
@@ -35,20 +35,31 @@ public class BuildInfo {
         try {
             Properties prop = new Properties();
             in = getClass().getResourceAsStream("/build-info.properties");
-            if ( in == null ) return; //fixes a throw from happening
+            if (in == null) return; //fixes a throw from happening
             prop.load(in);
             version = prop.getProperty("Implementation-Version");
             buildDate = prop.getProperty("Built-On");
             buildTime = prop.getProperty("Built-At");
-        } catch(Exception ee) {}
-        finally {
-            if(in!=null) {
-                try { in.close(); } catch(Exception eee) {}
+        } catch (Exception ee) {
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception eee) {
+                }
             }
         }
     }
-    
-    public String getVersion() { return version; }
-    public String getBuildDate() { return buildDate; }
-    public String getBuildTime() { return buildTime; }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getBuildDate() {
+        return buildDate;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
+    }
 }

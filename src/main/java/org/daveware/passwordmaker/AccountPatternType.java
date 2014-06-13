@@ -20,50 +20,48 @@ package org.daveware.passwordmaker;
 
 /**
  * Represents the type of pattern to use when auto-matching accounts.
+ *
  * @author Dave Marotti
  */
 public class AccountPatternType implements Comparable<AccountPatternType> {
-    
-    private int type;
-    
+
+    private final static String NAMES[] = {
+            "Wildcard", "Regular Expression"
+    };
     public static AccountPatternType WILDCARD = new AccountPatternType(0);
     public static AccountPatternType REGEX = new AccountPatternType(1);
-    
-    private final static String NAMES[] = {
-        "Wildcard", "Regular Expression"
-    };
-    
+    private int type;
+
     private AccountPatternType() {
         type = 0;
     }
-    
+
     private AccountPatternType(int i) {
         type = i;
     }
-    
+
+    public static AccountPatternType fromString(String str)
+            throws Exception {
+        if (str.length() == 0)
+            return WILDCARD;
+        if (str.equalsIgnoreCase("wildcard"))
+            return WILDCARD;
+        if (str.equalsIgnoreCase("regex") || str.equalsIgnoreCase(NAMES[1]))
+            return REGEX;
+
+        throw new Exception(String.format("Invalid AccountPatternType '%1s'", str));
+    }
+
     public int compareTo(AccountPatternType o) {
-        if(type < o.type)
+        if (type < o.type)
             return -1;
-        if(type > o.type)
+        if (type > o.type)
             return 1;
         return 0;
     }
-    
-    public static AccountPatternType fromString(String str) 
-            throws Exception
-    {
-        if(str.length()==0)
-            return WILDCARD;
-        if(str.equalsIgnoreCase("wildcard"))
-            return WILDCARD;
-        if(str.equalsIgnoreCase("regex") || str.equalsIgnoreCase(NAMES[1]))
-            return REGEX;
-        
-        throw new Exception(String.format("Invalid AccountPatternType '%1s'", str));
-    }
-    
+
     @Override
     public String toString() {
-    	return NAMES[type];
+        return NAMES[type];
     }
 }

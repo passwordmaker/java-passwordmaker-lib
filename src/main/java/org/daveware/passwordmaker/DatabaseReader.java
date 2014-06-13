@@ -21,10 +21,13 @@ import java.io.InputStream;
 
 /**
  * Interface to read a Database object from an InputStream.
+ *
  * @author Dave Marotti
  */
 public interface DatabaseReader {
     Database read(InputStream i) throws Exception;
+
     String getExtension();
+
     Account deserializeAccount(InputStream is) throws Exception;
 }

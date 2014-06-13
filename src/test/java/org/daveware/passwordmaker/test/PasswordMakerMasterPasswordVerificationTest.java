@@ -18,7 +18,7 @@ public class PasswordMakerMasterPasswordVerificationTest {
 
     @Test
     public void testEmptyMasterPassword() throws Exception {
-        assertEquals("gNV",saToString(pwm.generateVerificationCode(new SecureCharArray(""))));
+        assertEquals("gNV", saToString(pwm.generateVerificationCode(new SecureCharArray(""))));
     }
 
     @Test
@@ -31,10 +31,11 @@ public class PasswordMakerMasterPasswordVerificationTest {
         assertEquals("RHd", saToString(pwm.generateVerificationCode(new SecureCharArray("happybirthday"))));
     }
 
-    /** This unit test shows that configuring a password maker profile with the same settings that
-     *  the {@link PasswordMaker#generateVerificationCode} uses will generate the same output.
-     *
-     *  This is just a sanity check
+    /**
+     * This unit test shows that configuring a password maker profile with the same settings that
+     * the {@link PasswordMaker#generateVerificationCode} uses will generate the same output.
+     * <p/>
+     * This is just a sanity check
      */
     @Test
     public void testPwmWithSameProfileSettings() throws Exception {

@@ -29,11 +29,16 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Runs test against the Database class.
- * 
+ *
  * @author Dave Marotti
  */
 public class DatabaseTest {
-    
+
+    int numAdd = 0;
+    int numRemove = 0;
+    int numChange = 0;
+    int numDirty = 0;
+
     public DatabaseTest() {
     }
 
@@ -44,21 +49,147 @@ public class DatabaseTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
         Security.addProvider(new BouncyCastleProvider());
     }
-    
+
     @After
     public void tearDown() {
     }
 
-    int numAdd = 0;
-    int numRemove = 0;
-    int numChange = 0;
-    int numDirty = 0;
-    
+    /**
+     * Test of addAccount method, of class Database.
+     */
+    @Test
+    public void testAddAccount() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        numChange = 0;
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        assertEquals(numAdd, 3);
+
+        assertEquals(instance.getRootAccount().getChild(0).getName(), account.getName());
+        assertEquals(instance.getRootAccount().getChild(0).getChildren().get(0).getName(), subAccount.getName());
+        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
+
+        assertEquals(numDirty, 3);
+    }
+
+    /**
+     * Test of changeAccount method, of class Database.
+     */
+    @Test
+    public void testChangeAccount() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        numChange = 0;
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        account2.setName("name4");
+        instance.changeAccount(account2);
+        assertEquals(numChange, 1);
+        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
+        assertEquals(numDirty, 4);
+    }
+
+    /**
+     * Test of removeAccount method, of class Database.
+     */
+    @Test
+    public void testRemoveAccount() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        numChange = 0;
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        instance.removeAccount(account);
+        assertEquals(numRemove, 1);
+        assertEquals(instance.getRootAccount().getChild(0).getName(), account2.getName());
+        assertEquals(numDirty, 4);
+    }
+
+    /**
+     * Test of printDatabase method, of class Database.
+     */
+    @Test
+    public void testPrintDatabase() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        instance.printDatabase();
+    }
+
+    /**
+     * Test of findParent method, of class Database.
+     */
+    @Test
+    public void testFindParent() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        assertEquals(account, instance.findParent(subAccount));
+        assertEquals(instance.getRootAccount(), instance.findParent(account));
+        assertEquals(instance.getRootAccount(), instance.findParent(account2));
+    }
+
+    @Test
+    public void testFindAccountById() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        Account account = new Account("name1", "http://url.org", "username1");
+        account.setId(Account.createId("name1"));
+        instance.addAccount(instance.getRootAccount(), account);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        subAccount.setId(Account.createId("name2"));
+        instance.addAccount(account, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        account2.setId(Account.createId("name3"));
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        assertEquals(account, instance.findAccountById(account.getId()));
+        assertEquals(account2, instance.findAccountById(account2.getId()));
+        assertEquals(subAccount, instance.findAccountById(subAccount.getId()));
+    }
+
     class MyDBListener implements DatabaseListener {
         @Override
         public void accountAdded(Account parent, Account account) {
@@ -79,137 +210,5 @@ public class DatabaseTest {
         public void dirtyStatusChanged(boolean status) {
             numDirty++;
         }
-    }
-    
-    /**
-     * Test of addAccount method, of class Database.
-     */
-    @Test
-    public void testAddAccount() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        numChange = 0;
-        
-        Account account = new Account("name1", "http://url.org", "username1");
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        instance.addAccount(instance.getRootAccount(), account2);
-        
-        assertEquals(numAdd, 3);
-        
-        assertEquals(instance.getRootAccount().getChild(0).getName(), account.getName());
-        assertEquals(instance.getRootAccount().getChild(0).getChildren().get(0).getName(), subAccount.getName());
-        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
-        
-        assertEquals(numDirty, 3);
-    }
-
-    /**
-     * Test of changeAccount method, of class Database.
-     */
-    @Test
-    public void testChangeAccount() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        numChange = 0;
-
-        Account account = new Account("name1", "http://url.org", "username1");
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        instance.addAccount(instance.getRootAccount(), account2);
-        
-        account2.setName("name4");
-        instance.changeAccount(account2);
-        assertEquals(numChange, 1);
-        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
-        assertEquals(numDirty, 4);
-    }
-
-    /**
-     * Test of removeAccount method, of class Database.
-     */
-    @Test
-    public void testRemoveAccount() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        numChange = 0;
-
-        Account account = new Account("name1", "http://url.org", "username1");
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        instance.addAccount(instance.getRootAccount(), account2);
-        
-        instance.removeAccount(account);
-        assertEquals(numRemove, 1);
-        assertEquals(instance.getRootAccount().getChild(0).getName(), account2.getName());
-        assertEquals(numDirty, 4);
-    }
-
-
-    /**
-     * Test of printDatabase method, of class Database.
-     */
-    @Test
-    public void testPrintDatabase() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        Account account = new Account("name1", "http://url.org", "username1");
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        instance.addAccount(instance.getRootAccount(), account2);
-        
-        instance.printDatabase();
-    }
-
-    /**
-     * Test of findParent method, of class Database.
-     */
-    @Test
-    public void testFindParent() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        Account account = new Account("name1", "http://url.org", "username1");
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        instance.addAccount(instance.getRootAccount(), account2);
-        
-        assertEquals(account, instance.findParent(subAccount));
-        assertEquals(instance.getRootAccount(), instance.findParent(account));
-        assertEquals(instance.getRootAccount(), instance.findParent(account2));
-    }
-
-    @Test
-    public void testFindAccountById() throws Exception {
-        Database instance = new Database();
-        instance.addDatabaseListener(new MyDBListener());
-        
-        Account account = new Account("name1", "http://url.org", "username1");
-        account.setId(Account.createId("name1"));
-        instance.addAccount(instance.getRootAccount(), account);
-        Account subAccount = new Account("name2", "http://url2.org", "username2");
-        subAccount.setId(Account.createId("name2"));
-        instance.addAccount(account, subAccount);
-        Account account2 = new Account("name3", "http://url3.org", "username3");
-        account2.setId(Account.createId("name3"));
-        instance.addAccount(instance.getRootAccount(), account2);
-
-        assertEquals(account, instance.findAccountById(account.getId()));
-        assertEquals(account2, instance.findAccountById(account2.getId()));
-        assertEquals(subAccount, instance.findAccountById(subAccount.getId()));
     }
 }

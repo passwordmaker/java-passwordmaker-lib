@@ -21,9 +21,11 @@ import java.io.OutputStream;
 
 /**
  * Implement this to write a database to an output stream.
+ *
  * @author landshark
  */
 public interface DatabaseWriter {
-	void write(OutputStream os, Database db) throws Exception;
-	void serializeAccount(OutputStream os, Account account) throws Exception;
+    void write(OutputStream os, Database db) throws Exception;
+
+    void serializeAccount(OutputStream os, Account account) throws Exception;
 }

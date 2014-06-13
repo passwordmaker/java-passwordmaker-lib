@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ParsedDomain {
-    /** Parsed from: change #<a href="https://github.com/bitboxer/chrome-passwordmaker/blob/4000f7ff7da1aa709b4a079dde5728f0e96cb887/javascript/settings.js#L12">4000f7ff7da1aa709b4a079dde5728f0e96cb887</a> from <a href="https://github.com/bitboxer/chrome-passwordmaker">chrome-passwordmaker</a>
+    /**
+     * Parsed from: change #<a href="https://github.com/bitboxer/chrome-passwordmaker/blob/4000f7ff7da1aa709b4a079dde5728f0e96cb887/javascript/settings.js#L12">4000f7ff7da1aa709b4a079dde5728f0e96cb887</a> from <a href="https://github.com/bitboxer/chrome-passwordmaker">chrome-passwordmaker</a>
      */
     private static Set<String> TLD = new HashSet<String>(Arrays.asList(
             "aland.fi", "wa.edu.au", "nsw.edu.au", "vic.edu.au", "csiro.au", "conf.au", "info.au", "oz.au",
@@ -63,7 +64,7 @@ public class ParsedDomain {
     public ParsedDomain(String domainString) {
         fullDomain = domainString;
         // empty domain
-        if ( fullDomain.length() == 0 ) {
+        if (fullDomain.length() == 0) {
             tld = "";
             domain = "";
             subdomains = "";
@@ -71,26 +72,26 @@ public class ParsedDomain {
         }
         int dot = 0;
         while (dot != -1) {
-            if ( TLD.contains(domainString.substring(dot+1)) ) {
-                tld = domainString.substring(dot+1);
-                int startOfDomain = domainString.lastIndexOf(".", dot-1);
-                domain = domainString.substring(startOfDomain+1);
-                if ( startOfDomain > 0 ) {
+            if (TLD.contains(domainString.substring(dot + 1))) {
+                tld = domainString.substring(dot + 1);
+                int startOfDomain = domainString.lastIndexOf(".", dot - 1);
+                domain = domainString.substring(startOfDomain + 1);
+                if (startOfDomain > 0) {
                     subdomains = domainString.substring(0, startOfDomain);
                 } else {
                     subdomains = "";
                 }
                 break;
             }
-            dot = domainString.indexOf(".", dot+1);
+            dot = domainString.indexOf(".", dot + 1);
         }
-        if ( dot == -1 ) {
+        if (dot == -1) {
             // do tld found
             dot = domainString.lastIndexOf(".");
-            tld = domainString.substring(dot+1);
-            int startOfDomain = domainString.lastIndexOf(".", dot-1);
-            domain = domainString.substring(startOfDomain+1);
-            if ( startOfDomain > 0 ) {
+            tld = domainString.substring(dot + 1);
+            int startOfDomain = domainString.lastIndexOf(".", dot - 1);
+            domain = domainString.substring(startOfDomain + 1);
+            if (startOfDomain > 0) {
                 subdomains = domainString.substring(0, startOfDomain);
             } else {
                 subdomains = "";

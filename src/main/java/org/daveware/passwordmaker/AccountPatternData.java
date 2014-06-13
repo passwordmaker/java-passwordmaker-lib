@@ -19,7 +19,6 @@ package org.daveware.passwordmaker;
 
 
 /**
- *
  * @author Dave Marotti
  */
 public class AccountPatternData {
@@ -27,17 +26,17 @@ public class AccountPatternData {
     private AccountPatternType type = AccountPatternType.WILDCARD;
     private boolean enabled = true;
     private String desc = "";
-    
+
     public AccountPatternData() {
     }
-    
+
     public AccountPatternData(AccountPatternData d) {
         pattern = d.pattern;
         type = d.type;
         enabled = d.enabled;
         desc = d.desc;
     }
-    
+
     public void copyFrom(AccountPatternData d) {
         pattern = d.pattern;
         type = d.type;
@@ -100,9 +99,9 @@ public class AccountPatternData {
     public void setDesc(String desc) {
         this.desc = desc;
     }
-    
+
     @Override
     public String toString() {
-    	return this.desc;
+        return this.desc;
     }
 }

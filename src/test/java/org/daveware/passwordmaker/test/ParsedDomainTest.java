@@ -24,6 +24,7 @@ public class ParsedDomainTest {
         assertEquals("", domain.getSubdomains());
         assertEquals("google.doesnotexist", domain.fullDomain());
     }
+
     @Test
     public void testMultiLevelTLD() {
         ParsedDomain domain = new ParsedDomain("google.co.uk");
@@ -39,6 +40,7 @@ public class ParsedDomainTest {
         assertEquals("google.sa.edu.au", domain.getDomain());
         assertEquals("", domain.getSubdomains());
     }
+
     @Test
     public void testSimpleWithSubDomains() {
         ParsedDomain domain = new ParsedDomain("www.google.com");
@@ -57,6 +59,7 @@ public class ParsedDomainTest {
         assertEquals("x1.x2", domain.getSubdomains());
         assertEquals("x1.x2.google.doesnotexist", domain.fullDomain());
     }
+
     @Test
     public void testMultiLevelTLDWithSubDomains() {
         ParsedDomain domain = new ParsedDomain("www.google.co.uk");
@@ -76,6 +79,7 @@ public class ParsedDomainTest {
         assertEquals("google.sa.edu.au", domain.getDomain());
         assertEquals("x1.x2", domain.getSubdomains());
     }
+
     @Test
     public void testEmptyStringParsing() {
         ParsedDomain domain = new ParsedDomain("");
