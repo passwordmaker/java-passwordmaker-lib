@@ -20,7 +20,7 @@ package org.daveware.passwordmaker;
 import java.security.MessageDigest;
 import java.util.*;
 
-import static org.daveware.passwordmaker.Utilities.byteArrayToHexString;
+import static org.daveware.passwordmaker.ByteArrayUtils.byteArrayToHexString;
 
 /**
  * Represents an account.  This object also functions as a parent account for
