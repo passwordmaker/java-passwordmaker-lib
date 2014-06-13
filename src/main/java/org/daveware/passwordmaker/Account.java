@@ -20,6 +20,8 @@ package org.daveware.passwordmaker;
 import java.security.MessageDigest;
 import java.util.*;
 
+import static org.daveware.passwordmaker.Utilities.byteArrayToHexString;
+
 /**
  * Represents an account.  This object also functions as a parent account for
  * which it can have any number of child accounts.
@@ -32,10 +34,10 @@ public final class Account implements Comparable<Account> {
 		Protocol, Subdomain, Domain, PortPathAnchorQuery
 	}
 	
-    public static String ROOT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/accounts";
-    public static String DEFAULT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/defaults";
+    public final static String ROOT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/accounts";
+    public final static String DEFAULT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/defaults";
     
-    public static int DEFAULT_LENGTH = 8;
+    public final static int DEFAULT_LENGTH = 8;
     
     private String name              = "";
     private String desc              = "";
@@ -75,27 +77,31 @@ public final class Account implements Comparable<Account> {
         this.url = url;
         this.username = username;
     }
+
+    public Account(Account toClone) {
+        copySettings(toClone);
+    }
     
     /**
      * Constructor which allows all members to be defined except for the ID which
      * will be constructed from a SHA-1 hash of the URL + username. This does not
      * include autopop.
      * 
-     * @param name
-     * @param desc
-     * @param url
-     * @param username
-     * @param algorithm
-     * @param hmac
-     * @param trim
-     * @param length
-     * @param characterSet
-     * @param leetType
-     * @param leetLevel
-     * @param modifier
-     * @param prefix
-     * @param suffix
-     * @param sha256Bug 
+     * @param name - name for the account
+     * @param desc - description for the account
+     * @param url - the url of the account
+     * @param username - the username for the account
+     * @param algorithm - the algorithm to use against the master password
+     * @param hmac - should you use the hmac version
+     * @param trim - the trim the input text
+     * @param length - the length of the generated password for account
+     * @param characterSet - the characterSet to use for generated password
+     * @param leetType - leet-ify the generated password
+     * @param leetLevel - How much leet to use
+     * @param modifier - this field is to allow for adjustment of the outputted password
+     * @param prefix - the prefix to put in front of every generated password
+     * @param suffix - the suffix to add behind every generated password
+     * @param sha256Bug - has the buggy firefox javascript sha256
      */
     public Account(String name, String desc, String url, String username, AlgorithmType algorithm, boolean hmac,
             boolean trim, int length, String characterSet, LeetType leetType,
@@ -152,7 +158,7 @@ public final class Account implements Comparable<Account> {
             this.patterns.add(new AccountPatternData(data));
         }
         // The documentation says EnumSet.copyOf() will fail on empty sets.
-        if(a.urlComponents.isEmpty()==false)
+        if(!a.urlComponents.isEmpty())
             this.urlComponents = EnumSet.copyOf(a.urlComponents);
         else
             this.urlComponents = defaultUrlComponents();
@@ -198,9 +204,9 @@ public final class Account implements Comparable<Account> {
         throws Exception
     {
         MessageDigest digest = MessageDigest.getInstance("SHA1", "BC");
-        return new String("rdf:#$" + digest.digest(str.getBytes()));
+        return "rdf:#$" + byteArrayToHexString(digest.digest(str.getBytes()));
     }
-    
+
     /**
      * Creates and _returns_ an ID from data in an account.
      * @param acc The account to base the data off.
@@ -214,7 +220,7 @@ public final class Account implements Comparable<Account> {
 
     /**
      * Gets the default set of UrlComponents (empty set).
-     * @return
+     * @return the default set of UrlComponents (none)
      */
 	private static EnumSet<UrlComponents> defaultUrlComponents() {
 	    return EnumSet.noneOf(UrlComponents.class);
@@ -240,6 +246,7 @@ public final class Account implements Comparable<Account> {
         return isAFolder;
     }
     
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isAutoPop() {
         return autoPop;
     }
@@ -306,6 +313,7 @@ public final class Account implements Comparable<Account> {
     /**
      * @param trim the trim to set
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setTrim(boolean trim) {
         this.trim = trim;
     }
@@ -439,6 +447,7 @@ public final class Account implements Comparable<Account> {
     /**
      * @return the sha256Bug
      */
+    @SuppressWarnings("UnusedDeclaration")
     public boolean isSha256Bug() {
         return sha256Bug;
     }
@@ -446,6 +455,7 @@ public final class Account implements Comparable<Account> {
     /**
      * @param sha256Bug the sha256Bug to set
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setSha256Bug(boolean sha256Bug) {
         this.sha256Bug = sha256Bug;
     }
@@ -482,6 +492,7 @@ public final class Account implements Comparable<Account> {
     /**
      * @param urlComponent - Add a component of the url to be used as the input text for the generated password
      */
+    @SuppressWarnings("UnusedDeclaration")
     public final void removeUrlComponent(UrlComponents urlComponent) {
     	this.urlComponents.remove(urlComponent);
     }
@@ -514,6 +525,7 @@ public final class Account implements Comparable<Account> {
      * Gets the count of all children (of children of children...).
      * @return The total number of all descendants.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public int getNestedChildCount() {
         ArrayList<Account> stack = new ArrayList<Account>();
         int size = 0;
@@ -552,8 +564,8 @@ public final class Account implements Comparable<Account> {
     
     /**
      * Tests if an account is a direct child of this account.
-     * @param account
-     * @return
+     * @param account check if the passed in account is a child of 'this' account
+     * @return true if given account is a child of 'this' account
      */
     public boolean hasChild(Account account) {
         for(Account child : children) {
@@ -611,6 +623,7 @@ public final class Account implements Comparable<Account> {
     /**
      * @param patterns the patterns to set
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setPatterns(ArrayList<AccountPatternData> patterns) {
         this.patterns = patterns;
     }
