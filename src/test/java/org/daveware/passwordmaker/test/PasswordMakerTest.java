@@ -56,13 +56,13 @@ public class PasswordMakerTest {
         	retVal.append(", HMAC=").append(account.isHmac());
         	retVal.append(", user=").append(account.getUsername());
         	retVal.append(", url=").append(account.getUrl());
-        	retVal.append(" leetlevel=" + account.getLeetLevel());
+        	retVal.append(" leetlevel=").append(account.getLeetLevel());
         	if ( ! account.getUrlComponents().isEmpty() )
         		retVal.append(" UrlComponents=").append(account.getUrlComponents());
         	retVal.append(')');
         	return retVal.toString();
         }
-    };
+    }
 
     // public Account(String name, String desc, String url, String username, AlgorithmType algorithm, boolean hmac,
     //                boolean trim, int length, String characterSet, LeetType leetType,
@@ -340,13 +340,13 @@ public class PasswordMakerTest {
             0x51, 0x48, 0x76 };
         PasswordMaker pwm = new PasswordMaker();
         SecureCharArray sec = pwm.rstr2any(chars, CharacterSets.BASE_93_SET, true);
-        if(Arrays.equals(sec.getData(), expectedTrim)==false) {
+        if(!Arrays.equals(sec.getData(), expectedTrim)) {
             fail("1 - rstr2any() failed with trim=true");
         }
 
         // This array happens to convert differently with trim=false
         sec = pwm.rstr2any(chars, CharacterSets.BASE_93_SET, false);
-        if(Arrays.equals(sec.getData(), expectedNoTrim)==false) {
+        if(!Arrays.equals(sec.getData(), expectedNoTrim)) {
             fail("2 - rstr2any() failed with trim=false");
         }
     }
@@ -356,18 +356,13 @@ public class PasswordMakerTest {
      */
     @Test
     public void testGenerate() throws Exception {
-        System.out.println("PasswordMaker.generate() - testing " + tests.length + " different account combinations");
-        
         int testNum = 0;
         int failCount = 0;
         for(PWTest test : tests) {
             Account account = test.account;
             PasswordMaker pm = new PasswordMaker();
             SecureCharArray output = pm.makePassword(new SecureCharArray(test.mpw.toCharArray()), account);
-            if(Arrays.equals(output.getData(), test.expectedOutput.toCharArray())) {
-                
-            }
-            else {
+            if(!Arrays.equals(output.getData(), test.expectedOutput.toCharArray())) {
                 System.out.println("Test" + testNum + test + " failed");
                 System.out.println("Expected: " + test.expectedOutput);
                 System.out.println("Received: " + new String(output.getData()));

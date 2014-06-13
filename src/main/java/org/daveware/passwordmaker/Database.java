@@ -19,6 +19,8 @@ package org.daveware.passwordmaker;
 
 import org.daveware.passwordmaker.Account.UrlComponents;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,6 +33,7 @@ import java.util.logging.Logger;
  * 
  * @author Dave Marotti
  */
+@SuppressWarnings("UnusedDeclaration")
 public class Database {
     private Logger logger = Logger.getLogger(getClass().getName());
     private Account rootAccount = new Account("default", "http://domain.com", "username");
@@ -125,8 +128,10 @@ public class Database {
     
     /**
      * Internal routine to remove a child from a parent.
-     * @param parent
-     * @param child 
+     * Notifies the listeners of the removal
+     *
+     * @param parent - The parent to remove the child from
+     * @param child - The child to remove from parent
      */
     private void removeAccount(Account parent, Account child) {
         parent.getChildren().remove(child);
@@ -189,7 +194,7 @@ public class Database {
     //
     ////////////////////////////////////////////////////////////////////////////
     public void addDatabaseListener(DatabaseListener l) {
-        if(listeners.contains(l)==false)
+        if(!listeners.contains(l))
             listeners.add(l);
     }
     
@@ -258,13 +263,17 @@ public class Database {
      * Debug routine to dump the database.
      */
     public void printDatabase() {
-        printDatabase(rootAccount, 0);
+        printDatabase(System.out);
     }
-    
+
+    public void printDatabase(PrintStream stream) {
+        printDatabase(rootAccount, 0, stream);
+    }
+
     /**
      * Gooey recursiveness.
      */
-    private void printDatabase(Account acc, int level) {
+    private void printDatabase(Account acc, int level, PrintStream stream) {
         String buf = "";
         
         for(int i=0; i<level; i++)
@@ -272,11 +281,11 @@ public class Database {
         
         buf += "+";
         buf += acc.getName() + "[" + acc.getUrl() + "] (" + acc.getPatterns().size() + " patterns)";
-        
-        System.out.println(buf);
+
+        stream.println(buf);
         
         for(Account account : acc.getChildren())
-            printDatabase(account, level + 2);
+            printDatabase(account, level + 2, stream);
     }
     
     /**
@@ -320,10 +329,12 @@ public class Database {
     }
     
     /**
-     * Internal function to aid in searching.
-     * @param parent
-     * @param url
-     * @return
+     * Internal function to aid in searching.  This will find the first account in the tree starting at parent
+     * that matches the url given.
+     *
+     * @param parent - The parent to start searching with.
+     * @param url - Url to search for
+     * @return the matching account (maybe the parent), or Null if no matching account was found.
      */
     private Account findAccountByUrl(Account parent, String url) {
     	// First search the parent
@@ -405,5 +416,12 @@ public class Database {
         // Otherwise use the next node
         return parent.getChildren().get(index+1);
     }
-     
+
+    @Override
+    public String toString() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        printDatabase(ps);
+        return baos.toString();
+    }
 }

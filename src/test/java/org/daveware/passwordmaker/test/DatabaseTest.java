@@ -86,7 +86,6 @@ public class DatabaseTest {
      */
     @Test
     public void testAddAccount() throws Exception {
-        System.out.println("addAccount");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         
@@ -101,9 +100,9 @@ public class DatabaseTest {
         
         assertEquals(numAdd, 3);
         
-        assert(instance.getRootAccount().getChild(0).getName().equals(account.getName()));
-        assert(instance.getRootAccount().getChild(0).getChildren().get(0).getName().equals(subAccount.getName()));
-        assert(instance.getRootAccount().getChild(1).getName().equals(account2.getName()));
+        assertEquals(instance.getRootAccount().getChild(0).getName(), account.getName());
+        assertEquals(instance.getRootAccount().getChild(0).getChildren().get(0).getName(), subAccount.getName());
+        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
         
         assertEquals(numDirty, 3);
     }
@@ -113,7 +112,6 @@ public class DatabaseTest {
      */
     @Test
     public void testChangeAccount() throws Exception {
-        System.out.println("changeAccount");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         
@@ -129,7 +127,7 @@ public class DatabaseTest {
         account2.setName("name4");
         instance.changeAccount(account2);
         assertEquals(numChange, 1);
-        assert(instance.getRootAccount().getChild(1).getName().equals(account2.getName()));
+        assertEquals(instance.getRootAccount().getChild(1).getName(), account2.getName());
         assertEquals(numDirty, 4);
     }
 
@@ -138,7 +136,6 @@ public class DatabaseTest {
      */
     @Test
     public void testRemoveAccount() throws Exception {
-        System.out.println("removeAccount");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         
@@ -153,7 +150,7 @@ public class DatabaseTest {
         
         instance.removeAccount(account);
         assertEquals(numRemove, 1);
-        assert(instance.getRootAccount().getChild(0).getName().equals(account2.getName()));
+        assertEquals(instance.getRootAccount().getChild(0).getName(), account2.getName());
         assertEquals(numDirty, 4);
     }
 
@@ -163,7 +160,6 @@ public class DatabaseTest {
      */
     @Test
     public void testPrintDatabase() throws Exception {
-        System.out.println("printDatabase");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         
@@ -182,7 +178,6 @@ public class DatabaseTest {
      */
     @Test
     public void testFindParent() throws Exception {
-        System.out.println("findParent");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         
@@ -200,7 +195,6 @@ public class DatabaseTest {
 
     @Test
     public void testFindAccountById() throws Exception {
-        System.out.println("findAccountById");
         Database instance = new Database();
         instance.addDatabaseListener(new MyDBListener());
         

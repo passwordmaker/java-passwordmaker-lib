@@ -43,15 +43,11 @@ public class RDFDatabaseReader implements DatabaseReader {
 
     public static final String EXTENSION = ".rdf";
     public static final String FF_GLOBAL_SETTINGS_URI = "http://passwordmaker.mozdev.org/globalSettings";
-    
+    public static final int MAX_PATTERNS = 100000;
+
     boolean ignoreBuggyJavascript = true;
     Logger logger = Logger.getLogger(getClass().getName());
-    
-    public class SeqData {
-        public String id = "";
-        public ArrayList<String> listItems = new ArrayList<String>();
-    };
-    
+
     public RDFDatabaseReader() {
         
     }
@@ -61,6 +57,7 @@ public class RDFDatabaseReader implements DatabaseReader {
      * version of HMAC-SHA256.  This defaults to true. If set to false it will
      * cause a fatal exception to be raised and the loading will abort.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setIgnoreBuggyJavascript(boolean b) {
         ignoreBuggyJavascript = b;
     }
@@ -111,8 +108,7 @@ public class RDFDatabaseReader implements DatabaseReader {
      * Internal routine which will build a HashMap<String, Account> of values
      * corresponding to every RDF:Description node it can find.
      * 
-     * @param doc The XML document to parse.
-     * @return a SIX DEMON BAG!
+     * @param rdfElement The XML document to parse.
      * @throws Exception upon seeing things no one else can see, doing things
      *                   noone else can do!.
      */
@@ -133,7 +129,7 @@ public class RDFDatabaseReader implements DatabaseReader {
                 
                 // NODE: Account
                 if(nodeName.compareTo("RDF:Description")==0) {
-                    Account account = null;
+                    Account account;
                     try {
                         // PasswordMaker stores it's settings in an RDF:Description node as well
                         // so we need to catch it and ignore it as it will result in a bad account.
@@ -159,7 +155,7 @@ public class RDFDatabaseReader implements DatabaseReader {
                     } catch(IncompatibleException e) {
                         // I'm not about to emulate the buggy javascript... so users can either
                         // ignore it or abort.
-                        if(ignoreBuggyJavascript==true)
+                        if(ignoreBuggyJavascript)
                             logger.warning(String.format("***Incompatibility[%1s,%2s]: %2s", ((Element) child).getAttribute("RDF:about"), ((Element) child).getAttribute("NS1:name"), e.getMessage()));
                         else
                             throw e;
@@ -246,7 +242,7 @@ public class RDFDatabaseReader implements DatabaseReader {
         // Groups only have a name, about, and description attribute.
         // If this is detected, mark it as a folder. Otherwise read
         // the full account data set.
-        if(element.hasAttribute("NS1:hashAlgorithmLB")==false) {
+        if(!element.hasAttribute("NS1:hashAlgorithmLB")) {
             account.setIsFolder(true);
         }
         else {
@@ -293,7 +289,7 @@ public class RDFDatabaseReader implements DatabaseReader {
             }
     
             // pattern info... I really hope nobody has more than 100000
-            for(int iPattern = 0; iPattern < 100000; ++iPattern) {
+            for(int iPattern = 0; iPattern < MAX_PATTERNS; ++iPattern) {
                 String pattern = element.getAttribute("NS1:pattern" + iPattern).trim();
                 String patternType = element.getAttribute("NS1:patterntype" + iPattern).trim();
                 String patternEnabled = element.getAttribute("NS1:patternenabled" + iPattern).trim();
@@ -331,7 +327,7 @@ public class RDFDatabaseReader implements DatabaseReader {
         ArrayList<String> parentIdStack = new ArrayList<String>();
 
         // Verify the root node exists
-        if(seqMap.containsKey(Account.ROOT_ACCOUNT_URI)==false)
+        if(!seqMap.containsKey(Account.ROOT_ACCOUNT_URI))
             throw new Exception("File does not contain the root account, '" + Account.ROOT_ACCOUNT_URI + "'");
         parentIdStack.add(Account.ROOT_ACCOUNT_URI);
         
@@ -367,7 +363,7 @@ public class RDFDatabaseReader implements DatabaseReader {
                 for(String childId : seqMap.get(parentId)) {
                     Account childAccount = descriptionMap.get(childId);
                     if(childAccount!=null) {
-                        if(parentAccount.hasChild(childAccount)==false) {
+                        if(!parentAccount.hasChild(childAccount)) {
                             parentAccount.getChildren().add(childAccount);
                             
                             // If the child has children, add it to the parentIdStack for later processing, also mark
