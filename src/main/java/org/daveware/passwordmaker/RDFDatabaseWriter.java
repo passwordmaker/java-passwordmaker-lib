@@ -17,10 +17,11 @@
  */
 package org.daveware.passwordmaker;
 
+import org.daveware.passwordmaker.xmlwrappers.DefaultXmlStreamWriter;
+import org.daveware.passwordmaker.xmlwrappers.XmlIOException;
+import org.daveware.passwordmaker.xmlwrappers.XmlStreamWriter;
 import org.xml.sax.InputSource;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -56,6 +57,11 @@ public class RDFDatabaseWriter implements DatabaseWriter {
         return new String(((ByteArrayOutputStream) res.getOutputStream()).toByteArray());
     }
 
+
+    protected XmlStreamWriter newXmlStreamWriter(Writer writer) throws XmlIOException {
+        return new DefaultXmlStreamWriter(writer);
+    }
+
     @Override
     /**
      * Writes the Database to an OutputStream in the RDF format.
@@ -65,14 +71,13 @@ public class RDFDatabaseWriter implements DatabaseWriter {
         try {
             StringWriter sWriter = new StringWriter();
 
-            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-            XMLStreamWriter writer = outputFactory.createXMLStreamWriter(sWriter);
+            XmlStreamWriter writer = newXmlStreamWriter(sWriter);
 
             writer.writeStartDocument();
             writer.writeStartElement("RDF:RDF");
-            writer.writeAttribute("xmlns:NS1", "http://passwordmaker.mozdev.org/rdf#");
-            writer.writeAttribute("xmlns:NC", "http://home.netscape.com/NC-rdf#");
-            writer.writeAttribute("xmlns:RDF", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+            writer.addPrefix("NS1", "http://passwordmaker.mozdev.org/rdf#");
+            writer.addPrefix("NC", "http://home.netscape.com/NC-rdf#");
+            writer.addPrefix("RDF", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 
             //for(Account child : db.getRootAccount().getChildren()) {
             //	writeParent(child, writer);
@@ -103,9 +108,8 @@ public class RDFDatabaseWriter implements DatabaseWriter {
 
     @Override
     public void serializeAccount(OutputStream os, Account account) throws Exception {
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         OutputStreamWriter streamWriter = new OutputStreamWriter(os, "UTF-8");
-        XMLStreamWriter writer = outputFactory.createXMLStreamWriter(streamWriter);
+        XmlStreamWriter writer = newXmlStreamWriter(streamWriter);
         try {
             writer.writeStartDocument("UTF-8", "1.0");
             writeDescription(account, writer);
@@ -115,7 +119,7 @@ public class RDFDatabaseWriter implements DatabaseWriter {
             // must not throw, otherwise it will block the underlying exception that may have thrown
             try {
                 writer.close();
-            } catch (Throwable e) {
+            } catch (Throwable ignored) {
             }
         }
     }
@@ -127,14 +131,14 @@ public class RDFDatabaseWriter implements DatabaseWriter {
      * @param writer  The XML stream to write into.
      * @throws Exception ...
      */
-    private void writeDescription(Account account, XMLStreamWriter writer)
+    private void writeDescription(Account account, XmlStreamWriter writer)
             throws Exception {
         writer.writeStartElement("RDF:Description");
         writer.writeAttribute("RDF:about", account.getId());
         writer.writeAttribute("NS1:name", account.getName());
         writer.writeAttribute("NS1:description", account.getDesc());
 
-        if (account.isFolder() == false) {
+        if (!account.isFolder()) {
             writer.writeAttribute("NS1:whereLeetLB", account.getLeetType().toRdfString());
             writer.writeAttribute("NS1:leetLevelLB", Integer.toString(account.getLeetLevel().getLevel()));
 
@@ -186,7 +190,7 @@ public class RDFDatabaseWriter implements DatabaseWriter {
      * @param writer  The XML stream to write to.
      * @throws Exception on who the hell knows.
      */
-    private void writeParent(Account account, XMLStreamWriter writer)
+    private void writeParent(Account account, XmlStreamWriter writer)
             throws Exception {
         // Sequence block
         writer.writeStartElement("RDF:Seq");
@@ -221,7 +225,7 @@ public class RDFDatabaseWriter implements DatabaseWriter {
      * @param writer The XML stream to write to.
      * @throws Exception ... probably never.
      */
-    private void writeFFGlobalSettings(Database db, XMLStreamWriter writer)
+    private void writeFFGlobalSettings(Database db, XmlStreamWriter writer)
             throws Exception {
         writer.writeStartElement("RDF:Description");
 

@@ -5,6 +5,8 @@ import org.daveware.passwordmaker.Account;
 import org.daveware.passwordmaker.Account.UrlComponents;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertTrue;
+
 public class AccountTest {
 
     @Test
@@ -23,7 +25,13 @@ public class AccountTest {
         copy.addUrlComponent(UrlComponents.Protocol);
         orig.clearUrlComponents();
         copy.copySettings(orig);
-        Assert.assertTrue(copy.getUrlComponents().isEmpty());
+        assertTrue(copy.getUrlComponents().isEmpty());
+    }
+
+    @Test
+    public void testDefaultAccount() {
+        Account account =  Account.makeDefaultAccount();
+        assertTrue(account.isDefault());
     }
 
 }

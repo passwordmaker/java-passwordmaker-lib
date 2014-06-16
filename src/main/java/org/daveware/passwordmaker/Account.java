@@ -30,6 +30,8 @@ import static org.daveware.passwordmaker.ByteArrayUtils.byteArrayToHexString;
  */
 public final class Account implements Comparable<Account> {
 
+    public final static String DEFAULT_ACCOUNT_NAME = "default";
+    public final static String DEFAULT_USERNAME = "";
     public final static String ROOT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/accounts";
     public final static String DEFAULT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/defaults";
     public final static int DEFAULT_LENGTH = 8;
@@ -54,6 +56,13 @@ public final class Account implements Comparable<Account> {
     private ArrayList<AccountPatternData> patterns = new ArrayList<AccountPatternData>();
     private ArrayList<Account> children = new ArrayList<Account>();
     private boolean isAFolder = false;
+
+    public static Account makeDefaultAccount() {
+        Account account = new Account(DEFAULT_ACCOUNT_NAME, "", "");
+        account.addUrlComponent(UrlComponents.Domain);
+        account.setId(DEFAULT_ACCOUNT_URI);
+        return account;
+    }
 
     public Account() {
 
@@ -238,6 +247,10 @@ public final class Account implements Comparable<Account> {
         return isAFolder;
     }
 
+    /**
+     * @return if the firefox version auto populates the username
+     * and password fields of the page if the url is matching
+     */
     @SuppressWarnings("UnusedDeclaration")
     public boolean isAutoPop() {
         return autoPop;
@@ -618,16 +631,52 @@ public final class Account implements Comparable<Account> {
     }
 
     /**
+     * This will make a deep clone of the passed in Iterable.
+     * This will also replace any patterns already set.
+     *
      * @param patterns the patterns to set
      */
     @SuppressWarnings("UnusedDeclaration")
-    public void setPatterns(ArrayList<AccountPatternData> patterns) {
-        this.patterns = patterns;
+    public void setPatterns(Iterable<AccountPatternData> patterns) {
+        this.patterns.clear();
+        for (AccountPatternData data : patterns) {
+            this.patterns.add(new AccountPatternData(data));
+        }
     }
 
     @Override
     public String toString() {
         return this.name;
+    }
+
+
+
+    public String toDebugString() {
+        return "Account{" +
+                "name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                ", url='" + url + '\'' +
+                ", isDefault=" + isDefault() +
+                ", isRoot=" + isRoot() +
+                ", username='" + username + '\'' +
+                ", algorithm=" + algorithm +
+                ", hmac=" + hmac +
+                ", trim=" + trim +
+                ", length=" + length +
+                ", characterSet='" + characterSet + '\'' +
+                ", leetType=" + leetType +
+                ", leetLevel=" + leetLevel +
+                ", modifier='" + modifier + '\'' +
+                ", prefix='" + prefix + '\'' +
+                ", suffix='" + suffix + '\'' +
+                ", sha256Bug=" + sha256Bug +
+                ", id='" + id + '\'' +
+                ", autoPop=" + autoPop +
+                ", urlComponents=" + urlComponents +
+                ", patterns=" + patterns +
+                ", children=" + children +
+                ", isAFolder=" + isAFolder +
+                '}';
     }
 
     public enum UrlComponents {
