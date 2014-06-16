@@ -3,7 +3,7 @@ passwordmaker-je-lib
 
 The library portion of [passwordmaker-je](https://code.google.com/p/passwordmaker-je/)
 
-This library does all of the supporting calls to implement (Passwordmaker.org)[http://passwordmaker.org] algorithm.  
+This library does all of the supporting calls to implement [Passwordmaker.org](http://passwordmaker.org) algorithm.  
 This hopefully will allow both the Android edition and the java desktop edition to share a very common code base.
 
 The original passwordmaker-je was written by Dave Marotti.  James Stapleton has modified it so that it fits into a library, 
