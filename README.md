@@ -1,7 +1,7 @@
 passwordmaker-je-lib
 ====================
 
-The library portion of passwordmaker-je (from: https://code.google.com/p/passwordmaker-je/)
+The library portion of [passwordmaker-je](https://code.google.com/p/passwordmaker-je/)
 
 This library does all of the supporting calls to implement (Passwordmaker.org)[http://passwordmaker.org] algorithm.  
 This hopefully will allow both the Android edition and the java desktop edition to share a very common code base.
@@ -12,8 +12,8 @@ and then made it a maven project.
 How to build
 ===================
 0. git clone https://github.com/tasermonkey/passwordmaker-je-lib.git
-1. Download a (java 6+ jdk)[http://www.oracle.com/technetwork/java/javase/downloads/index.html]
-2. Download (maven)[http://maven.apache.org/]
+1. Download a [java 6+ jdk](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+2. Download [maven](http://maven.apache.org/)
 3. Run `$ mvn install`
 
 Any pull requests are welcomed.
