@@ -84,8 +84,13 @@ public class AccountPatternMatcher {
         public boolean match(String text, String pattern) {
             this.text = text;
             this.pattern = pattern;
-
+            if ( text.isEmpty() )
+                return doesMatchOnEmpty();
             return matchCharacter(0, 0);
+        }
+
+        private boolean doesMatchOnEmpty() {
+            return pattern.isEmpty() || pattern.equals("*");
         }
 
         private boolean matchCharacter(int patternIndex, int textIndex) {
