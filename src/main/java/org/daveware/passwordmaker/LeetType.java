@@ -51,6 +51,10 @@ public class LeetType implements Comparable<LeetType> {
         return NONE;
     }
 
+    public int getOrdinal() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return name;

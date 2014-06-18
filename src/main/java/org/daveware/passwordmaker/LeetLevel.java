@@ -88,6 +88,10 @@ public class LeetLevel implements Comparable<LeetLevel> {
         return level;
     }
 
+    public int getOrdinal() {
+        return getLevel() - 1;
+    }
+
     public int compareTo(LeetLevel o) {
         if (level < o.level)
             return -1;
