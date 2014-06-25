@@ -30,7 +30,9 @@ import static org.daveware.passwordmaker.ByteArrayUtils.byteArrayToHexString;
  */
 public final class Account implements Comparable<Account> {
 
+    private final static Random random = new Random();
     public final static String DEFAULT_ACCOUNT_NAME = "default";
+    @SuppressWarnings("UnusedDeclaration")
     public final static String DEFAULT_USERNAME = "";
     public final static String ROOT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/accounts";
     public final static String DEFAULT_ACCOUNT_URI = "http://passwordmaker.mozdev.org/defaults";
@@ -71,12 +73,14 @@ public final class Account implements Comparable<Account> {
     public Account(String name, boolean isFolder) {
         this.isAFolder = isFolder;
         this.name = name;
+        this.id = createId();
     }
 
     public Account(String name, String url, String username) {
         this.name = name;
         this.url = url;
         this.username = username;
+        this.id = createIdSilently(url + username);
     }
 
     public Account(Account toClone) {
@@ -152,6 +156,23 @@ public final class Account implements Comparable<Account> {
         this.id = id;
     }
 
+
+    /**
+     * Creates an random ID from a string.
+     * <p/>
+     * This is used to create the ID of the account which should be unique.
+     * There's no way for this object to know if it is truly unique so the database
+     * or GUI should do a check for uniqueness and re-hash if needed.
+     *
+     * @return A hex string representing 20 random bytes.
+     */
+    public static String createId() {
+        byte[] buf = new byte[20];
+        random.nextBytes(buf);
+        return "rdf:#$" + byteArrayToHexString(buf);
+    }
+
+
     /**
      * Creates an ID from a string.
      * <p/>
@@ -167,6 +188,14 @@ public final class Account implements Comparable<Account> {
             throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA1", "BC");
         return "rdf:#$" + byteArrayToHexString(digest.digest(str.getBytes()));
+    }
+
+    private static String createIdSilently(String str) {
+        try {
+            return createId(str);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -651,6 +680,7 @@ public final class Account implements Comparable<Account> {
 
 
 
+    @SuppressWarnings("UnusedDeclaration")
     public String toDebugString() {
         return "Account{" +
                 "name='" + name + '\'' +
