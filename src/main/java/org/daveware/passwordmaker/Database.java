@@ -21,8 +21,7 @@ import org.daveware.passwordmaker.Account.UrlComponents;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
@@ -57,6 +56,24 @@ public class Database {
     // ACCOUNT MODIFICATION ROUTINES
     //
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Is is so that the after an database is loaded, we can reuse this object
+     * This does not swap listeners.
+     *
+     * @param other - the other database to swap with
+     */
+    public void swapAccounts(Database other) {
+        Account otherRoot = other.rootAccount;
+        other.rootAccount = rootAccount;
+        rootAccount = otherRoot;
+        boolean otherDirty = other.dirty;
+        other.dirty = dirty;
+        dirty = otherDirty;
+        HashMap<String, String> otherGlobalSettings = other.globalSettings;
+        other.globalSettings = globalSettings;
+        globalSettings = otherGlobalSettings;
+    }
 
     /**
      * Adds an account to a parent.  This will first check to see if the account
@@ -290,6 +307,16 @@ public class Database {
             printDatabase(account, level + 2, stream);
     }
 
+    public List<Account> findPathToAccountById(String id) {
+        LinkedList<Account> result = getRootInLinkedList();
+        findAccountById(result, id);
+        // reverse the list, so that its,<root> -> parent -> ... -> Found Account
+        List<Account> retValue = new ArrayList<Account>(result.size());
+        Iterator<Account> iter = result.descendingIterator();
+        while (iter.hasNext()) retValue.add(iter.next());
+        return retValue;
+    }
+
     /**
      * Locates an account, given an id.
      *
@@ -297,30 +324,42 @@ public class Database {
      * @return The account if found, else null.
      */
     public Account findAccountById(String id) {
-        return findAccountById(rootAccount, id);
+        return findAccountById(getRootInLinkedList(), id);
     }
 
     /**
      * Internal function to recurse through accounts looking for an id.
      *
-     * @param parent The parent to start the search at.
+     * @param stack  The path to the current parent
      * @param id     The id to look for.
      * @return The Account if found, else null.
      */
-    private Account findAccountById(Account parent, String id) {
-        if (parent == null)
+    private Account findAccountById(LinkedList<Account> stack, String id) {
+        final Account parent = stack.peek();
+        if (parent == null) {
+            if ( ! stack.isEmpty() ) stack.pop();
             return null;
+        }
         for (Account child : parent.getChildren()) {
-            if (child.getId().equals(id))
+            if (child.getId().equals(id)) {
+                stack.push(child);
                 return child;
+            }
             if (child.getChildren().size() > 0) {
-                Account foundAccount = findAccountById(child, id);
+                stack.push(child);
+                Account foundAccount = findAccountById(stack, id);
                 if (foundAccount != null)
                     return foundAccount;
             }
         }
-
+        stack.pop();
         return null;
+    }
+
+    private LinkedList<Account> getRootInLinkedList() {
+        LinkedList<Account> stack = new LinkedList<Account>();
+        stack.add(rootAccount);
+        return stack;
     }
 
     /**

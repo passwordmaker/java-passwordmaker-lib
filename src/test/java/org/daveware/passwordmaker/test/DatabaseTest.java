@@ -24,8 +24,12 @@ import org.daveware.passwordmaker.DatabaseListener;
 import org.junit.*;
 
 import java.security.Security;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Runs test against the Database class.
@@ -188,6 +192,68 @@ public class DatabaseTest {
         assertEquals(account, instance.findAccountById(account.getId()));
         assertEquals(account2, instance.findAccountById(account2.getId()));
         assertEquals(subAccount, instance.findAccountById(subAccount.getId()));
+
+        assertNull(instance.findAccountById("DNE"));
+    }
+
+    @Test
+    public void testFindAccountByIdWithPath() throws Exception {
+        Database instance = new Database();
+        instance.addDatabaseListener(new MyDBListener());
+
+        Account folder1 = new Account("folder1", "", "");
+        folder1.setId(Account.createId("folder1"));
+        folder1.setIsFolder(true);
+        instance.addAccount(instance.getRootAccount(), folder1);
+        Account subAccount = new Account("name2", "http://url2.org", "username2");
+        subAccount.setId(Account.createId("name2"));
+        instance.addAccount(folder1, subAccount);
+        Account account2 = new Account("name3", "http://url3.org", "username3");
+        account2.setId(Account.createId("name3"));
+        instance.addAccount(instance.getRootAccount(), account2);
+
+        Account folder2 = new Account("folder2", "", "");
+        folder2.setId(Account.createId("folder2"));
+        folder2.setIsFolder(true);
+        instance.addAccount(instance.getRootAccount(), folder2);
+
+        Account account3 = new Account("name4", "http://url4.org", "username4");
+        account3.setId(Account.createId("name4"));
+        instance.addAccount(folder2, account3);
+
+        Account folder3 = new Account("folder3", "", "");
+        folder3.setId(Account.createId("folder3"));
+        folder3.setIsFolder(true);
+        instance.addAccount(folder2, folder3);
+
+        Account account4 = new Account("name5", "http://url5.org", "username5");
+        account4.setId(Account.createId("name5"));
+        instance.addAccount(folder3, account4);
+
+        List<Account> expected = Arrays.asList(instance.getRootAccount(), folder1, subAccount );
+        assertEquals(expected, instance.findPathToAccountById(subAccount.getId()));
+
+        expected = Arrays.asList(instance.getRootAccount(), folder2, account3 );
+        assertEquals(expected, instance.findPathToAccountById(account3.getId()));
+
+        expected = Arrays.asList(instance.getRootAccount(), folder2, folder3, account4 );
+        assertEquals(expected, instance.findPathToAccountById(account4.getId()));
+
+        expected = Arrays.asList();
+        assertEquals(expected, instance.findPathToAccountById("DNE"));
+    }
+
+    @Test
+    public void verifyLinkedList() {
+        List<String> strs = Arrays.asList("a", "b", "c");
+        LinkedList<String> stack = new LinkedList<String>();
+        for ( String s : strs) stack.push(s);
+        assertEquals("c", stack.peek());
+        assertEquals("c", stack.pop());
+        assertEquals("b", stack.peek());
+        assertEquals("b", stack.pop());
+        assertEquals("a", stack.peek());
+        assertEquals("a", stack.pop());
     }
 
     class MyDBListener implements DatabaseListener {
