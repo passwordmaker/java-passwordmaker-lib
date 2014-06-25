@@ -2,6 +2,11 @@ package org.daveware.passwordmaker.test;
 
 import org.daveware.passwordmaker.*;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class AccountManagerSamples {
 
     public static void addSamples(AccountManager accountManager) {
@@ -58,5 +63,19 @@ public class AccountManagerSamples {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<String> SAMPLE_URLS = Arrays.asList("http://reddit.com/",
+            "http://realnews.com/",
+            "http://google.com/",
+            "http://goo.gl/",
+            "http://markerisred.com/",
+            "http://github.com/",
+            "http://www.stackoverflow.com/",
+            "https://www.facebook.com/",
+            "https://gmail.com/");
+
+    public static void addFavorites(AccountManager accountManager) {
+        accountManager.getFavoriteUrls().addAll(SAMPLE_URLS);
     }
 }

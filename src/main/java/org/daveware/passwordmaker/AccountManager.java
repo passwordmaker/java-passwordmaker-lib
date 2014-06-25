@@ -1,5 +1,7 @@
 package org.daveware.passwordmaker;
 
+import org.daveware.passwordmaker.util.Joiner;
+import org.daveware.passwordmaker.util.Splitter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -165,6 +167,40 @@ public class AccountManager implements DatabaseListener {
     public void removeFavoriteUrl(String url) {
         favoriteUrls.remove(url);
     }
+
+    /**
+     * Encodes a list of favorites urls as a series of &lt;url1&gt;,&lt;url2&gt;...
+     *
+     * @return a string encoded version of the urls for use in the globalSettings
+     */
+    public String encodeFavoriteUrls() {
+        if( !favoriteUrls.isEmpty() ) {
+            return "<" + Joiner.on(">,<").join(favoriteUrls) + ">";
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Decodes a list of favorites urls from a series of &lt;url1&gt;,&lt;url2&gt;...
+     *
+     * Will then put them into the list of favorites, optionally clearing first
+     *
+     * @param encodedUrlList - String encoded version of the list
+     * @param clearFirst - clear the list of favorites first
+     */
+    public void decodeFavoritesUrls(String encodedUrlList, boolean clearFirst) {
+        int start = 0;
+        int end = encodedUrlList.length();
+        if ( encodedUrlList.startsWith("<") ) start++;
+        if ( encodedUrlList.endsWith(">") ) end--;
+        encodedUrlList = encodedUrlList.substring(start, end);
+        if ( clearFirst ) favoriteUrls.clear();
+        for (String url : Splitter.on(">,<").omitEmptyStrings().split(encodedUrlList) ) {
+            favoriteUrls.add(url);
+        }
+    }
+
 
     public Account getDefaultAccount() {
         return defaultProfile;
