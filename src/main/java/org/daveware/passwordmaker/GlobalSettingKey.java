@@ -30,7 +30,7 @@ public class GlobalSettingKey {
     String key;
     String defaultValue;
 
-    private GlobalSettingKey(String k, String def) {
+    public GlobalSettingKey(String k, String def) {
         key = k;
         defaultValue = def;
     }
