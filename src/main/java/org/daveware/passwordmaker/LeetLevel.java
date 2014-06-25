@@ -33,7 +33,7 @@ public class LeetLevel implements Comparable<LeetLevel> {
     public static final LeetLevel LEVEL8 = new LeetLevel(8);
     public static final LeetLevel LEVEL9 = new LeetLevel(9);
 
-    private static final LeetLevel[] LEVELS = {
+    public static final LeetLevel[] LEVELS = {
             LEVEL1, LEVEL2, LEVEL3, LEVEL4, LEVEL5, LEVEL6, LEVEL7, LEVEL8, LEVEL9
     };
 
