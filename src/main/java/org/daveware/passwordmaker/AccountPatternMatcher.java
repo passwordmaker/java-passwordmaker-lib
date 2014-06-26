@@ -49,6 +49,9 @@ public class AccountPatternMatcher {
                 // meh
             }
         }
+        if ( account.getUrl().equalsIgnoreCase(url) ) {
+            return true;
+        }
         return false;
     }
 
