@@ -17,17 +17,16 @@
  */
 package org.daveware.passwordmaker.test;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.daveware.passwordmaker.Account;
 import org.daveware.passwordmaker.Database;
 import org.daveware.passwordmaker.DatabaseListener;
 import org.junit.*;
 
-import java.security.Security;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.daveware.passwordmaker.test.TestUtils.addBCProvider;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -56,7 +55,7 @@ public class DatabaseTest {
 
     @Before
     public void setUp() {
-        Security.addProvider(new BouncyCastleProvider());
+        addBCProvider();
     }
 
     @After

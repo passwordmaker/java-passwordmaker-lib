@@ -17,10 +17,36 @@
  */
 package org.daveware.passwordmaker.test;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.daveware.passwordmaker.SecureCharArray;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.Security;
 
 public class TestUtils {
     public static String saToString(SecureCharArray arr) {
         return new String(arr.getData());
+    }
+
+
+    public static void addBCProvider() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
+    public static byte[] readFully(InputStream input) throws IOException {
+        ByteArrayOutputStream retVal = new ByteArrayOutputStream();
+
+        byte[] buffer = new byte[4096];
+        int read = 0;
+        while(read != -1) {
+            read = input.read(buffer);
+            if(read > 0) {
+                retVal.write(buffer, 0, read);
+            }
+        }
+
+        return retVal.toByteArray();
     }
 }
