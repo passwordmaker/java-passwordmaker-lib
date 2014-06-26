@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:NS1="http://passwordmaker.mozdev.org/rdf#" xmlns:NC="http://home.netscape.com/NC-rdf#">
+  <RDF:Seq RDF:about="http://passwordmaker.mozdev.org/accounts">
+    <RDF:li RDF:resource="http://passwordmaker.mozdev.org/defaults"/>
+    <RDF:li RDF:resource="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46"/>
+    <RDF:li RDF:resource="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f"/>
+  </RDF:Seq>
+  <RDF:Description RDF:about="http://passwordmaker.mozdev.org/accounts" NS1:name="default" NS1:description="" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8" NS1:usernameTB="username" NS1:counter="" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&amp;*()_-+={}|[]\:&quot;;'&lt;&gt;?,./" NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://domain.com"/>
+  <RDF:Description RDF:about="http://passwordmaker.mozdev.org/defaults" NS1:name="default" NS1:description="" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8" NS1:usernameTB="" NS1:counter="" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:protocolCB="false" NS1:subdomainCB="false" NS1:domainCB="true" NS1:pathCB="false"/>
+  <RDF:Description RDF:about="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46" NS1:name="Personal" NS1:description=""/>
+  <RDF:Description RDF:about="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f" NS1:name="Work" NS1:description=""/>
+  <RDF:Seq RDF:about="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46">
+    <RDF:li RDF:resource="rdf:#$a0ca03949dc36323e6ef716e3064eb260531f363"/>
+    <RDF:li RDF:resource="rdf:#$1d416d3dc326135b6349532791807b0ba154fb9d"/>
+  </RDF:Seq>
+  <RDF:Description RDF:about="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46" NS1:name="Personal" NS1:description=""/>
+  <RDF:Description RDF:about="rdf:#$a0ca03949dc36323e6ef716e3064eb260531f363" NS1:name="Reddit" NS1:description="Reddit page" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="sha256" NS1:passwordLength="20" NS1:usernameTB="testUser1" NS1:counter="1" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&amp;*()_-+={}|[]\:&quot;;'&lt;&gt;?,./" NS1:prefix="$r3d" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://reddit.com" NS1:pattern0="*://*.reddit.com/*" NS1:patterntype0="wildcard" NS1:patternenabled0="true" NS1:patterndesc0="reddit" NS1:pattern1="*://reddit.com/*" NS1:patterntype1="wildcard" NS1:patternenabled1="true" NS1:patterndesc1="redditdomain"/>
+  <RDF:Description RDF:about="rdf:#$1d416d3dc326135b6349532791807b0ba154fb9d" NS1:name="facebook" NS1:description="facebook page" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="sha256" NS1:passwordLength="23" NS1:usernameTB="testUser2" NS1:counter="2" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" NS1:prefix="" NS1:suffix="$f@d" NS1:autoPopulate="false" NS1:urlToUse="http://facebook.com" NS1:pattern0="*://*.facebook.com/*" NS1:patterntype0="wildcard" NS1:patternenabled0="true" NS1:patterndesc0="facebook" NS1:pattern1="*://facebook.com/*" NS1:patterntype1="wildcard" NS1:patternenabled1="true" NS1:patterndesc1="facebookdomain"/>
+  <RDF:Seq RDF:about="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f">
+    <RDF:li RDF:resource="rdf:#$daec72c4b98769c07069d85f512e069cffdd407d"/>
+    <RDF:li RDF:resource="rdf:#$32232ef276daca6638ac3826e388e2bb20f841f1"/>
+  </RDF:Seq>
+  <RDF:Description RDF:about="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f" NS1:name="Work" NS1:description=""/>
+  <RDF:Description RDF:about="rdf:#$daec72c4b98769c07069d85f512e069cffdd407d" NS1:name="stackoverflow" NS1:description="dev qa" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="rmd160" NS1:passwordLength="23" NS1:usernameTB="devuser1" NS1:counter="3" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" NS1:prefix="%D3v" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://stackoverflow.com" NS1:pattern0="*://*.stackoverflow.com/*" NS1:patterntype0="wildcard" NS1:patternenabled0="true" NS1:patterndesc0="stackoverflow" NS1:pattern1="*://stackoverflow.com/*" NS1:patterntype1="wildcard" NS1:patternenabled1="true" NS1:patterndesc1="stackoverflowdomain"/>
+  <RDF:Description RDF:about="rdf:#$32232ef276daca6638ac3826e388e2bb20f841f1" NS1:name="github.com" NS1:description="code repo" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="sha1" NS1:passwordLength="23" NS1:usernameTB="devuser2" NS1:counter="4" NS1:charset="0123456789abcdef" NS1:prefix="%c0D3" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://github.com" NS1:pattern0="*://*.github.com/*" NS1:patterntype0="wildcard" NS1:patternenabled0="true" NS1:patterndesc0="github" NS1:pattern1="*://github.com/*" NS1:patterntype1="wildcard" NS1:patternenabled1="true" NS1:patterndesc1="githubdomain"/>
+  <RDF:Description RDF:about="http://passwordmaker.mozdev.org/globalSettings"/>
+</RDF:RDF>
