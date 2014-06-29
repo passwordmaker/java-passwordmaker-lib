@@ -391,6 +391,10 @@ public class RDFDatabaseReader implements DatabaseReader {
         }
     }
 
+    public List<IncompatibleException> getIncompatibleAccounts() {
+        return buggyAccounts;
+    }
+
 
     public String getExtension() {
         return RDFDatabaseReader.EXTENSION;

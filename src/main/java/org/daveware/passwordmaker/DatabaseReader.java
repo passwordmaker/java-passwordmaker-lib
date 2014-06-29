@@ -40,4 +40,6 @@ public interface DatabaseReader {
     }
 
     void setBuggyAlgoUseAction(BuggyAlgoAction action);
+
+    public List<IncompatibleException> getIncompatibleAccounts();
 }
