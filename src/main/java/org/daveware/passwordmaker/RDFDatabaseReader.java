@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -45,8 +46,9 @@ public class RDFDatabaseReader implements DatabaseReader {
     public static final String FF_GLOBAL_SETTINGS_URI = "http://passwordmaker.mozdev.org/globalSettings";
     public static final int MAX_PATTERNS = 100000;
 
-    boolean ignoreBuggyJavascript = true;
     Logger logger = Logger.getLogger(getClass().getName());
+    BuggyAlgoAction buggyJavascriptAction = BuggyAlgoAction.IGNORE;
+    List<IncompatibleException> buggyAccounts = new ArrayList<IncompatibleException>();
 
     public RDFDatabaseReader() {
 
@@ -59,11 +61,17 @@ public class RDFDatabaseReader implements DatabaseReader {
      */
     @SuppressWarnings("UnusedDeclaration")
     public void setIgnoreBuggyJavascript(boolean b) {
-        ignoreBuggyJavascript = b;
+        buggyJavascriptAction = b ? BuggyAlgoAction.IGNORE : BuggyAlgoAction.ABORT;
+    }
+
+
+    public void setBuggyAlgoUseAction(BuggyAlgoAction action) {
+        buggyJavascriptAction = action;
     }
 
     public Database read(InputStream i) throws Exception {
         Database db = new Database();
+        buggyAccounts.clear();
 
         HashMap<String, Account> descriptionMap = new HashMap<String, Account>();  // Map of hash -> Account
         HashMap<String, ArrayList<String>> seqMap = new HashMap<String, ArrayList<String>>(); // List of non-root nodes that have children
@@ -154,10 +162,14 @@ public class RDFDatabaseReader implements DatabaseReader {
                     } catch (IncompatibleException e) {
                         // I'm not about to emulate the buggy javascript... so users can either
                         // ignore it or abort.
-                        if (ignoreBuggyJavascript)
-                            logger.warning(String.format("***Incompatibility[%1s,%2s]: %2s", ((Element) child).getAttribute("RDF:about"), ((Element) child).getAttribute("NS1:name"), e.getMessage()));
-                        else
+                        if ( buggyJavascriptAction == BuggyAlgoAction.IGNORE ) {
+                            logger.warning(String.format("***Incompatibility[%1s,%2s]: %2s",
+                                    ((Element) child).getAttribute("RDF:about"),
+                                    ((Element) child).getAttribute("NS1:name"), e.getMessage()));
+                            buggyAccounts.add(e);
+                        } else {
                             throw e;
+                        }
                     }
                 }
                 // NODE: Hierarchy declaration
@@ -248,7 +260,7 @@ public class RDFDatabaseReader implements DatabaseReader {
             account.setLeetLevel(LeetLevel.fromString(element.getAttribute("NS1:leetLevelLB").trim()));
 
             String algorithm = element.getAttribute("NS1:hashAlgorithmLB").trim().toLowerCase();
-            account.setAlgorithm(AlgorithmType.fromRdfString(algorithm));
+            account.setAlgorithm(fromRdfString(account, algorithm));
             account.setHmac(algorithm.contains("hmac-"));
 
             String passwordLength = element.getAttribute("NS1:passwordLength").trim();
@@ -384,4 +396,12 @@ public class RDFDatabaseReader implements DatabaseReader {
         return RDFDatabaseReader.EXTENSION;
     }
 
+
+    public AlgorithmType fromRdfString(Account account, String algorithm) throws IncompatibleException {
+        try {
+            return AlgorithmType.fromRdfString(algorithm, buggyJavascriptAction == BuggyAlgoAction.CONVERT);
+        } catch (IncompatibleException e) {
+            throw new IncompatibleException("For account: " + account.getName() + "(" + account.getId() + "): " + e.getMessage());
+        }
+    }
 }

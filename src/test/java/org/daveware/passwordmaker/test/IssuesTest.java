@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,8 +84,10 @@ public class IssuesTest {
         writer.write(output, db);
 
         source = IssuesTest.class.getResourceAsStream(SAMPLE_2_RDF);
-        byte[] expectedOutput = readFully(source);
-        assertArrayEquals(expectedOutput, output.toByteArray());
+        String expectedOutput = new String(readFully(source));
+        expectedOutput = expectedOutput.replaceAll("\n", "");
+        String actual = output.toString().replaceAll("\n", "");
+        assertEquals( expectedOutput, actual);
     }
 
     private static Map<String, String> getIdToNameMap() {

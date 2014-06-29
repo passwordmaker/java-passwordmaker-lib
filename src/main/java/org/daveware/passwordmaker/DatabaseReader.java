@@ -18,6 +18,7 @@
 package org.daveware.passwordmaker;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Interface to read a Database object from an InputStream.
@@ -30,4 +31,13 @@ public interface DatabaseReader {
     String getExtension();
 
     Account deserializeAccount(InputStream is) throws Exception;
+
+
+    public enum BuggyAlgoAction {
+        IGNORE,
+        ABORT,
+        CONVERT
+    }
+
+    void setBuggyAlgoUseAction(BuggyAlgoAction action);
 }

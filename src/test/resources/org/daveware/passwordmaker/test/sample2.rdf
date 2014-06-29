@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:NS1="http://passwordmaker.mozdev.org/rdf#" xmlns:NC="http://home.netscape.com/NC-rdf#">
+<?xml version="1.0" encoding="UTF-8"?><RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:NS1="http://passwordmaker.mozdev.org/rdf#" xmlns:NC="http://home.netscape.com/NC-rdf#">
   <RDF:Seq RDF:about="http://passwordmaker.mozdev.org/accounts">
     <RDF:li RDF:resource="http://passwordmaker.mozdev.org/defaults"/>
     <RDF:li RDF:resource="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46"/>

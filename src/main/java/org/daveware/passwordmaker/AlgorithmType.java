@@ -73,10 +73,10 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
      * @param str The algorithm type. Valid values are: md4, md5, sha1, sha256,
      *            rmd160. Any of those valid types can be prefixed with "hmac-".
      * @return The algorithm type.
-     * @throws Exception upon invalid algorithm string.
+     * @throws IncompatibleException upon invalid algorithm string.
      */
-    public static AlgorithmType fromRdfString(String str)
-            throws Exception {
+    public static AlgorithmType fromRdfString(String str, boolean convert)
+            throws IncompatibleException {
         // default
         if (str.length() == 0)
             return MD5;
@@ -90,24 +90,31 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
                 return algoType;
         }
 
-        // TODO: full support for all invalid  types should be present as well as allowing the account to exist and be modified.
+        // TODO: full support for all invalid types should be present as well as allowing the account to exist and be modified.
+        if ( convert ) {
+            if (str.compareTo("hmac-sha256") == 0)
+                return AlgorithmType.SHA256;
+            if (str.compareTo("md5-v0.6") == 0 || str.compareTo("hmac-md5-v0.6") == 0)
+                return AlgorithmType.MD5;
+        }
+
         if (str.compareTo("hmac-sha256") == 0)
-            throw new IncompatibleException("Original hmac-sha1 implementation has been detected, " +
-                    "this is not compatibile with PasswordMakerJE due to a bug in the original " +
+            throw new IncompatibleException("Original hmac-sha256-v1.5.1 implementation has been detected, " +
+                    "this is not compatible with PasswordMakerJE due to a bug in the original " +
                     "javascript version. It is recommended that you update this account to use " +
                     "\"HMAC-SHA256\" in the PasswordMaker settings.");
         if (str.compareTo("md5-v0.6") == 0)
             throw new IncompatibleException("Original md5-v0.6 implementation has been detected, " +
-                    "this is not compatibile with PasswordMakerJE due to a bug in the original " +
+                    "this is not compatible with PasswordMakerJE due to a bug in the original " +
                     "javascript version. It is recommended that you update this account to use " +
                     "\"MD5\" in the PasswordMaker settings.");
         if (str.compareTo("hmac-md5-v0.6") == 0)
             throw new IncompatibleException("Original hmac-md5-v0.6 implementation has been detected, " +
-                    "this is not compatibile with PasswordMakerJE due to a bug in the original " +
+                    "this is not compatible with PasswordMakerJE due to a bug in the original " +
                     "javascript version. It is recommended that you update this account to use " +
                     "\"HMAC-MD5\" in the PasswordMaker settings.");
 
-        throw new Exception(String.format("Invalid algorithm type '%1s'", str));
+        throw new IncompatibleException(String.format("Invalid algorithm type '%1s'", str));
     }
 
     public String getName() {
