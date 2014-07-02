@@ -17,6 +17,7 @@
  */
 package org.daveware.passwordmaker;
 
+import org.daveware.passwordmaker.util.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -260,7 +261,9 @@ public class RDFDatabaseReader implements DatabaseReader {
             account.setLeetLevel(LeetLevel.fromString(element.getAttribute("NS1:leetLevelLB").trim()));
 
             String algorithm = element.getAttribute("NS1:hashAlgorithmLB").trim().toLowerCase();
-            account.setAlgorithm(fromRdfString(account, algorithm));
+            Pair<AlgorithmType, Boolean> algo = fromRdfString(account, algorithm);
+            account.setAlgorithm(algo.first);
+            account.setTrim(algo.second);
             account.setHmac(algorithm.contains("hmac-"));
 
             String passwordLength = element.getAttribute("NS1:passwordLength").trim();
@@ -401,7 +404,7 @@ public class RDFDatabaseReader implements DatabaseReader {
     }
 
 
-    public AlgorithmType fromRdfString(Account account, String algorithm) throws IncompatibleException {
+    public Pair<AlgorithmType, Boolean> fromRdfString(Account account, String algorithm) throws IncompatibleException {
         try {
             return AlgorithmType.fromRdfString(algorithm, buggyJavascriptAction == BuggyAlgoAction.CONVERT);
         } catch (IncompatibleException e) {

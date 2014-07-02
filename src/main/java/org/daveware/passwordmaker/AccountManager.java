@@ -14,7 +14,6 @@ public class AccountManager implements DatabaseListener {
     private PasswordMaker pwm = new PasswordMaker();
     private Database pwmProfiles = new Database();
     private Account selectedProfile = null;
-    private Account defaultProfile = null;
     private List<String> favoriteUrls = new ArrayList<String>();
 
     private String currentPasswordHash;
@@ -38,10 +37,6 @@ public class AccountManager implements DatabaseListener {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-        defaultProfile = pwmProfiles.findAccountById(Account.DEFAULT_ACCOUNT_URI);
-        if ( defaultProfile == null ) {
-            defaultProfile = pwmProfiles.getRootAccount();
         }
     }
 
@@ -203,17 +198,9 @@ public class AccountManager implements DatabaseListener {
 
 
     public Account getDefaultAccount() {
-        return defaultProfile;
-    }
-
-    public void setDefaultAccount(Account account) {
-        if ( account == null ) {
-            defaultProfile = pwmProfiles.getRootAccount();
-            return;
-        }
-        if ( ! account.isDefault() )
-            throw new IllegalArgumentException("Only accounts marked as the default account can be set as the default account.");
-        defaultProfile = account;
+        Account account = pwmProfiles.findAccountById(Account.DEFAULT_ACCOUNT_URI);
+        if ( account != null ) return account;
+        return pwmProfiles.getRootAccount();
     }
 
     public boolean matchesPasswordHash(String masterPassword) {

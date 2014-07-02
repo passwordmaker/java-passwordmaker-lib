@@ -17,6 +17,10 @@
  */
 package org.daveware.passwordmaker;
 
+import org.daveware.passwordmaker.util.Pair;
+
+import static org.daveware.passwordmaker.util.Pair.pair;
+
 /**
  * Object representing an algorithm type.
  * <p/>
@@ -72,14 +76,15 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
      *
      * @param str The algorithm type. Valid values are: md4, md5, sha1, sha256,
      *            rmd160. Any of those valid types can be prefixed with "hmac-".
+     * @param convert - if the broken version of sha256 is found, just replace with non-broken version, instead of throwing
      * @return The algorithm type.
      * @throws IncompatibleException upon invalid algorithm string.
      */
-    public static AlgorithmType fromRdfString(String str, boolean convert)
+    public static Pair<AlgorithmType, Boolean> fromRdfString(String str, boolean convert)
             throws IncompatibleException {
         // default
         if (str.length() == 0)
-            return MD5;
+            return pair(MD5, true);
 
         // Search the list of registered algorithms
         for (AlgorithmType algoType : TYPES) {
@@ -87,15 +92,15 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
             String hmacName = algoType.rdfHmacName.toLowerCase();
 
             if (str.compareTo(name) == 0 || str.compareTo(hmacName) == 0)
-                return algoType;
+                return pair(algoType, true);
         }
 
+        if (str.compareTo("md5-v0.6") == 0 || str.compareTo("hmac-md5-v0.6") == 0)
+            return pair(AlgorithmType.MD5, false);
+
         // TODO: full support for all invalid types should be present as well as allowing the account to exist and be modified.
-        if ( convert ) {
-            if (str.compareTo("hmac-sha256") == 0)
-                return AlgorithmType.SHA256;
-            if (str.compareTo("md5-v0.6") == 0 || str.compareTo("hmac-md5-v0.6") == 0)
-                return AlgorithmType.MD5;
+        if ( convert && str.compareTo("hmac-sha256") == 0) {
+                return pair(AlgorithmType.SHA256, true);
         }
 
         if (str.compareTo("hmac-sha256") == 0)
