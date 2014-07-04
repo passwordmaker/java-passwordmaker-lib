@@ -4,7 +4,9 @@ import org.daveware.passwordmaker.util.Joiner;
 import org.daveware.passwordmaker.util.Splitter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AccountManager implements DatabaseListener {
@@ -16,7 +18,8 @@ public class AccountManager implements DatabaseListener {
     private Account selectedProfile = null;
     private List<String> favoriteUrls = new ArrayList<String>();
 
-    private String currentPasswordHash;
+    private static final Account masterPwdHashAccount = makeDefaultAccount();
+    private SecureCharArray currentPasswordHash;
     private String passwordSalt;
     private boolean storePasswordHash;
 
@@ -86,7 +89,7 @@ public class AccountManager implements DatabaseListener {
         }
     }
 
-    private void clearSelectedAccount() {
+    public void clearSelectedAccount() {
         selectedProfile = null;
     }
 
@@ -203,36 +206,49 @@ public class AccountManager implements DatabaseListener {
         return pwmProfiles.getRootAccount();
     }
 
-    public boolean matchesPasswordHash(String masterPassword) {
+    public boolean matchesPasswordHash(SecureCharArray masterPassword) {
         if ( ! hasPasswordHash() ) {
             return true;
         }
-        String testPassHash = null;
+        SecureCharArray testPassHash = null;
         try {
-            SecureCharArray secureCharArray = pwm.makePassword(getPasswordSaltAsSecureCharArray(),
-                    pwmProfiles.getRootAccount(), masterPassword);
-            testPassHash = new String(secureCharArray.getData());
+            testPassHash = pwm.makePassword(masterPassword, masterPwdHashAccount, passwordSalt);
         } catch (Exception ignored) {
         }
-        return testPassHash == null || testPassHash.equals(getCurrentPasswordHash());
+        return testPassHash == null || Arrays.equals(testPassHash.getData(), getCurrentPasswordHash().getData());
     }
 
-    public String getCurrentPasswordHash() {
+    public SecureCharArray getCurrentPasswordHash() {
         return currentPasswordHash;
     }
 
-    public void setCurrentPasswordHash(String currentPasswordHash, String salt) {
-        this.currentPasswordHash = currentPasswordHash;
-        this.passwordSalt = salt;
+    /**
+     * This will salt and hash the password to store
+     * @param newPassword - the new password
+     */
+    public void setCurrentPasswordHashPassword(String newPassword) {
+        this.passwordSalt = UUID.randomUUID().toString();
+
+        try {
+            this.currentPasswordHash = pwm.makePassword(new SecureCharArray(newPassword),
+                    masterPwdHashAccount, getPasswordSalt());
+        } catch (Exception ignored) {}
         setStorePasswordHash(true);
+    }
+
+    public void replaceCurrentPasswordHash(SecureCharArray hash, String salt) {
+        if ( hash.length() > 0 && salt.length() > 0 ) {
+            this.passwordSalt = salt;
+            this.currentPasswordHash = hash;
+            setStorePasswordHash(true);
+        } else {
+            disablePasswordHash();
+        }
+
     }
 
     public String getPasswordSalt() {
         return this.passwordSalt;
-    }
-
-    public SecureCharArray getPasswordSaltAsSecureCharArray() {
-        return new SecureCharArray(this.passwordSalt);
     }
 
     public boolean hasPasswordHash() {
@@ -247,7 +263,10 @@ public class AccountManager implements DatabaseListener {
         this.storePasswordHash = storePasswordHash;
         if ( !storePasswordHash ) {
             this.passwordSalt = null;
-            this.currentPasswordHash = null;
+            if ( this.currentPasswordHash != null ) {
+                this.currentPasswordHash.erase(); // clear the memory first
+                this.currentPasswordHash = null;
+            }
         }
     }
 
