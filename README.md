@@ -11,7 +11,7 @@ and then made it a maven project.
 
 How to build
 ===================
-0. git clone https://github.com/tasermonkey/passwordmaker-je-lib.git
+0. git clone https://github.com/passwordmaker/java-passwordmaker-lib.git
 1. Download a [java 6+ jdk](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 2. Download [maven](http://maven.apache.org/)
 3. Run `$ mvn install`
