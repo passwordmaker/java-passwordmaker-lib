@@ -3,10 +3,7 @@ package org.daveware.passwordmaker;
 import org.daveware.passwordmaker.util.Joiner;
 import org.daveware.passwordmaker.util.Splitter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AccountManager implements DatabaseListener {
@@ -160,6 +157,10 @@ public class AccountManager implements DatabaseListener {
 
     public void addFavoriteUrl(String url) {
         favoriteUrls.add(url);
+    }
+
+    public void addFavoriteUrls(Collection<String> urls) {
+        favoriteUrls.addAll(urls);
     }
 
     public void removeFavoriteUrl(String url) {

@@ -156,16 +156,17 @@ public class RDFDatabaseWriter implements DatabaseWriter {
             writer.writeAttribute("NS1:autoPopulate", "false"); // TODO: make this a setting allowed in accounts
 
             // The default account contains specifiers for extracting pieces of an URL
-            if (account.isDefault()) {
-                Set<Account.UrlComponents> urlComponents = account.getUrlComponents();
+            Set<Account.UrlComponents> urlComponents = account.getUrlComponents();
+            // only write out any of them, if atleast one is set to true
+            if ( ! urlComponents.isEmpty() ) {
                 writer.writeAttribute("NS1:protocolCB", urlComponents.contains(Account.UrlComponents.Protocol) ? "true" : "false");
                 writer.writeAttribute("NS1:subdomainCB", urlComponents.contains(Account.UrlComponents.Subdomain) ? "true" : "false");
                 writer.writeAttribute("NS1:domainCB", urlComponents.contains(Account.UrlComponents.Domain) ? "true" : "false");
                 writer.writeAttribute("NS1:pathCB", urlComponents.contains(Account.UrlComponents.PortPathAnchorQuery) ? "true" : "false");
-            } else {
-                // The non-default accounts store the URL
-                writer.writeAttribute("NS1:urlToUse", account.getUrl());
             }
+            // only write out urlToUse if its set, or if no url components are set.
+            if ( urlComponents.isEmpty() || ! account.getUrl().isEmpty() )
+                writer.writeAttribute("NS1:urlToUse", account.getUrl());
 
             int patternCount = 0;
             for (AccountPatternData data : account.getPatterns()) {

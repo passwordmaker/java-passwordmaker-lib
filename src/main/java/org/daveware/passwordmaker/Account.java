@@ -186,7 +186,7 @@ public final class Account implements Comparable<Account> {
      */
     public static String createId(String str)
             throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA1", "BC");
+        MessageDigest digest = MessageDigest.getInstance("SHA1", PasswordMaker.getDefaultCryptoProvider());
         return "rdf:#$" + byteArrayToHexString(digest.digest(str.getBytes()));
     }
 

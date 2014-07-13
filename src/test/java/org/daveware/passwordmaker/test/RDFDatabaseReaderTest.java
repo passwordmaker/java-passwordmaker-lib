@@ -20,12 +20,14 @@ package org.daveware.passwordmaker.test;
 import junit.framework.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.daveware.passwordmaker.Account;
+import org.daveware.passwordmaker.AlgorithmType;
 import org.daveware.passwordmaker.Database;
 import org.daveware.passwordmaker.RDFDatabaseReader;
 import org.junit.*;
 
 import java.io.InputStream;
 import java.security.Security;
+import java.util.Set;
 
 /**
  * Runs tests against the RDFDatabaseReader class.
@@ -74,6 +76,38 @@ public class RDFDatabaseReaderTest {
         Assert.assertEquals("rdf:#$[B@5a676437", acc.getId());
         Assert.assertEquals("Another Modifier", acc.getModifier());
         Assert.assertEquals("Im a description", acc.getDesc());
+    }
+
+    @Test
+    public void testReadMultipleAccountsWithUrlComponents() throws Exception {
+        RDFDatabaseReader reader = new RDFDatabaseReader();
+        InputStream is = getClass().getResourceAsStream("sample4.rdf");
+        Database db = reader.read(is);
+        Account account = db.findAccountById("rdf:#$58fc633788509272e02e72c9b0c048782cde5d46");
+        Assert.assertNotNull(account);
+        Assert.assertEquals("Profile A", account.getName());
+        Assert.assertEquals("Another Profile", account.getDesc());
+        Assert.assertEquals(AlgorithmType.SHA256, account.getAlgorithm());
+        Assert.assertEquals(16, account.getLength());
+        Assert.assertEquals("tasermonkey", account.getUsername());
+        Assert.assertEquals("5243", account.getModifier());
+        Assert.assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", account.getCharacterSet());
+        Set<Account.UrlComponents> urlParts = account.getUrlComponents();
+        Assert.assertTrue("Contains subdomain", urlParts.contains(Account.UrlComponents.Subdomain));
+        Assert.assertTrue("Contains domain", urlParts.contains(Account.UrlComponents.Domain));
+        Assert.assertEquals(urlParts.toString() + ": Should only have subdomain, domain", 2, urlParts.size());
+        Account defaultAcc = db.findAccountById(Account.DEFAULT_ACCOUNT_URI);
+        Assert.assertNotNull(defaultAcc);
+        Assert.assertEquals("default", defaultAcc.getName());
+        Assert.assertEquals("", defaultAcc.getDesc());
+        Assert.assertEquals(AlgorithmType.MD5, defaultAcc.getAlgorithm());
+        Assert.assertEquals(8, defaultAcc.getLength());
+        Assert.assertEquals("", defaultAcc.getUsername());
+        Assert.assertEquals("", defaultAcc.getModifier());
+        Assert.assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", defaultAcc.getCharacterSet());
+        urlParts = defaultAcc.getUrlComponents();
+        Assert.assertTrue("Contains domain", urlParts.contains(Account.UrlComponents.Domain));
+        Assert.assertEquals(urlParts.toString() + ": Should only have domain", 1, urlParts.size());
     }
 
     /**

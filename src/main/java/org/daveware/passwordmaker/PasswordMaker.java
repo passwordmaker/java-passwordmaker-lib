@@ -54,6 +54,7 @@ public class PasswordMaker {
     public static void setDefaultCryptoProvider(String provider) {
         CRYPTO_PROVIDER = provider;
     }
+    public static String getDefaultCryptoProvider() { return CRYPTO_PROVIDER;  };
 
     /**
      * Calculates the strength of a password.
@@ -287,6 +288,12 @@ public class PasswordMaker {
      */
     public SecureCharArray makePassword(SecureCharArray masterPassword, Account account, final String inputText)
             throws Exception {
+
+        // HMAC algorithm requires a key that is >0 length.
+        if ( account.isHmac() &&  masterPassword.length() == 0 ) {
+            return new SecureCharArray();
+        }
+
         LeetLevel leetLevel = account.getLeetLevel();
         //int count = 0;
         int length = account.getLength();

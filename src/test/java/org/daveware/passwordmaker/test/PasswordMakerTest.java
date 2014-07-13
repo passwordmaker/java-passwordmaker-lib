@@ -27,6 +27,8 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.daveware.passwordmaker.test.TestUtils.saToString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -36,137 +38,141 @@ import static org.junit.Assert.fail;
  */
 public class PasswordMakerTest {
 
-    private static PWTest[] tests = {
+    private static PWTest[] tests;
+
+    private static void setupPWTest() {
+        tests = new PWTest[]{
 
             // Default account, MD5 length=8
             new PWTest(new Account("Yummy Humans", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com"), "123abc!@#/\\'\"", "B}ZR0.@e"),
 
-            // Very long password tests (issue 24)
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "B}ZR0.@exd0Z>3Du@`.&KW}Z(@~tDhJ*S$y_MnN]D.P*9O`\\l_"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "IYKnwMlY@m~j&A8_r$0YG&A~HGiZ1s;^;f``?7+xDrhnJL8h_&"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "F}3+bzw=$P-kFMtp<p\\DkQHvE[rg!Lb@;RZ2/L1\"R3JF)7_`?C"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Fz7cVJW9,r`S3bm8|k$SM6xe2GP_aoMgcsK}p9{t<QgjK9Q@>j"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "9!,-H}!R`n\";LV#GiK!BnHqn&D<Y$`uI]X(3vA|R;jo(<Xc!EU"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "ZQ7v(aB`T-$eN2Nk`yI;LnQOuK,W-J|Uf<K]J$,u@b=7]_&l9H"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "FV``ev3wbT}3#dBkjhmbBW*IvERuK_H=d&+t4L$:E[Rdd6E-l~"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Gg1P#zuzhFu#w>h&~C4/~\"yb{BQvjqF>:gPvjQ+<!4><K|o|E%"),
+                    // Very long password tests (issue 24)
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "B}ZR0.@exd0Z>3Du@`.&KW}Z(@~tDhJ*S$y_MnN]D.P*9O`\\l_"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "IYKnwMlY@m~j&A8_r$0YG&A~HGiZ1s;^;f``?7+xDrhnJL8h_&"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "F}3+bzw=$P-kFMtp<p\\DkQHvE[rg!Lb@;RZ2/L1\"R3JF)7_`?C"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Fz7cVJW9,r`S3bm8|k$SM6xe2GP_aoMgcsK}p9{t<QgjK9Q@>j"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "9!,-H}!R`n\";LV#GiK!BnHqn&D<Y$`uI]X(3vA|R;jo(<Xc!EU"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "ZQ7v(aB`T-$eN2Nk`yI;LnQOuK,W-J|Uf<K]J$,u@b=7]_&l9H"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "FV``ev3wbT}3#dBkjhmbBW*IvERuK_H=d&+t4L$:E[Rdd6E-l~"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 50, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Gg1P#zuzhFu#w>h&~C4/~\"yb{BQvjqF>:gPvjQ+<!4><K|o|E%"),
 
-            // MD5, HMACMD5, SHA1, HMACSH1 - no leet
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "B}ZR0.@exd0Z"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "IYKnwMlY@m~j"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "F}3+bzw=$P-k"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Fz7cVJW9,r`S"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "9!,-H}!R`n\";"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "ZQ7v(aB`T-$e"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "FV``ev3wbT}3"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Gg1P#zuzhFu#"),
+                    // MD5, HMACMD5, SHA1, HMACSH1 - no leet
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "B}ZR0.@exd0Z"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "IYKnwMlY@m~j"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "F}3+bzw=$P-k"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Fz7cVJW9,r`S"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "9!,-H}!R`n\";"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "ZQ7v(aB`T-$e"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "FV``ev3wbT}3"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "Gg1P#zuzhFu#"),
 
-            // MD5 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "bi77cc1ikc0v"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "gy?$3y5&gp'-"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "3?81kw5,4[mf"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "j6:n29r@1*0~"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "3!\\/7|2m&|2u"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|)|>1}u|>'97"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", ",|22<'/[-1\\/"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "|)8&|(~0(|=$"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "_||>(?&|>4&;"),
+                    // MD5 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "bi77cc1ikc0v"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "gy?$3y5&gp'-"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "3?81kw5,4[mf"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "j6:n29r@1*0~"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "3!\\/7|2m&|2u"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|)|>1}u|>'97"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", ",|22<'/[-1\\/"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "|)8&|(~0(|=$"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "_||>(?&|>4&;"),
 
-            // HMACMD5 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "j*uc`179[,h@"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "k;n~3mjpnp|4"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "'0fmn9k'/j.="),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "jd'c3}$]r6-v"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|3'/@9%''/m0"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|3|24?``'/5'"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "&}\"|2|'/|3\\/"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "86\\/9^<8|\\|("),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "_|~8|_|)(|={"),
+                    // HMACMD5 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "j*uc`179[,h@"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "k;n~3mjpnp|4"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "'0fmn9k'/j.="),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "jd'c3}$]r6-v"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|3'/@9%''/m0"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|3|24?``'/5'"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "&}\"|2|'/|3\\/"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "86\\/9^<8|\\|("),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.MD5, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "_|~8|_|)(|={"),
 
-            // SHA1 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "s-!=mk9>ic7v"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "bkc4'ng22+bp"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "8\"v23:n0;1'/"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "cd02'/vx0v:6"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "c7|2|45;@\\/("),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "&&|2|3w,|#u9"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", ">|22^^]^^]+["),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "(,)(,)1\"_|\\/"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "(6@%/\\/\\\\6|\\"),
+                    // SHA1 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "s-!=mk9>ic7v"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "bkc4'ng22+bp"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "8\"v23:n0;1'/"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "cd02'/vx0v:6"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "c7|2|45;@\\/("),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "&&|2|3w,|#u9"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", ">|22^^]^^]+["),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "(,)(,)1\"_|\\/"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "(6@%/\\/\\\\6|\\"),
 
-            // HMACSHA1 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "rdg_nug~\"1%r"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "fhfmjkmy9;[h"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "635x=?4r'784"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "f`h2#@7d{1f;"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "c6#9dx\"/|<|d"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "(|>$1|<2w|<9"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "^^66<|=><\"27"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "&<;(,)(|)&86"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "&86)(\"/_2'6\""),
+                    // HMACSHA1 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "rdg_nug~\"1%r"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "fhfmjkmy9;[h"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "635x=?4r'784"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "f`h2#@7d{1f;"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "c6#9dx\"/|<|d"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "(|>$1|<2w|<9"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "^^66<|=><\"27"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "&<;(,)(|)&86"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA1, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "&86)(\"/_2'6\""),
 
-            // SHA256 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "b3}vugy%}\\3."),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "7p{]rp(7knjx"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "jx|92m0&;c/0"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", ",~1:1(;u(hxc"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "1|2|<!187dfx"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", ",|&/|<#=#m[0"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "|3@&'/&|)/><"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "@1|\\/|\\/|_|2"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", ">~(,)#!(|{/\\"),
+                    // SHA256 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "b3}vugy%}\\3."),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "7p{]rp(7knjx"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "jx|92m0&;c/0"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", ",~1:1(;u(hxc"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "1|2|<!187dfx"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", ",|&/|<#=#m[0"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "|3@&'/&|)/><"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "@1|\\/|\\/|_|2"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", ">~(,)#!(|{/\\"),
 
-            // HMACSHA256 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "k%hx#4p9h]n="),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "[5>`vp57c2)0"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "@35_{x.-3-<4"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "8u[/[{d8@,5@"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|37~x7'/$_@~"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "7!2|>{72+^n~"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "5(_)}32'/5@|"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", ";\"/_;\\,)|!|)"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "/\\/\\,38.(|=|"),
+                    // HMACSHA256 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "k%hx#4p9h]n="),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "[5>`vp57c2)0"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "@35_{x.-3-<4"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "8u[/[{d8@,5@"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|37~x7'/$_@~"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "7!2|>{72+^n~"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "5(_)}32'/5@|"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", ";\"/_;\\,)|!|)"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.SHA256, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "/\\/\\,38.(|=|"),
 
-            // RIPEMD160 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "c<^9b_5{~7ds"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "cbppw1>2xu%7"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "f&=_78)7jn(4"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "8;8n1h62'/_%"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "x_w?x9n|>|>1"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "3]4%31w/@|=?"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "[,|+5|<><\\/_"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "'/|-|1\\8)8%*"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "6|'/()|\\|=|>"),
+                    // RIPEMD160 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "c<^9b_5{~7ds"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "cbppw1>2xu%7"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "f&=_78)7jn(4"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "8;8n1h62'/_%"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "x_w?x9n|>|>1"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "3]4%31w/@|=?"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "[,|+5|<><\\/_"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "'/|-|1\\8)8%*"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, false, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "6|'/()|\\|=|>"),
 
-            // HMACRIPEMD160 BOTH_LEET[1-9]
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "gd$g$;x&7\\9u"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "f:1-[,71f\"f$"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "85dn>h4?0u9+"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "3v~892x)@/9&"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|3$!n#4@718,"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|)!@1|=$_'u2"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "[|<|<7#(_)5\\"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "{}:(&*\\|>\"/_"),
-            new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "&|_|8|>|__||"),
+                    // HMACRIPEMD160 BOTH_LEET[1-9]
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL1, "", "", "", false, ""), "123abc!@#/\\'\"", "gd$g$;x&7\\9u"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL2, "", "", "", false, ""), "123abc!@#/\\'\"", "f:1-[,71f\"f$"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL3, "", "", "", false, ""), "123abc!@#/\\'\"", "85dn>h4?0u9+"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL4, "", "", "", false, ""), "123abc!@#/\\'\"", "3v~892x)@/9&"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL5, "", "", "", false, ""), "123abc!@#/\\'\"", "|3$!n#4@718,"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL6, "", "", "", false, ""), "123abc!@#/\\'\"", "|)!@1|=$_'u2"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL7, "", "", "", false, ""), "123abc!@#/\\'\"", "[|<|<7#(_)5\\"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "{}:(&*\\|>\"/_"),
+                    new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "&|_|8|>|__||"),
 
-            // Test Url components
-            urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain),
-            urlComponentTest("EkxyAhqWRdNs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.Subdomain),
-            urlComponentTest("FlEkcwvpDedl", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.Subdomain, UrlComponents.PortPathAnchorQuery),
-            urlComponentTest("D9nvoh1yCroN", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Protocol, UrlComponents.Domain, UrlComponents.Subdomain, UrlComponents.PortPathAnchorQuery),
-            urlComponentTest("CFMeyEkYXHIo", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
-            urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com", UrlComponents.Domain),
-            urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
-            urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
-            urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com", UrlComponents.Domain),
-            urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com/path/to?everything=true", UrlComponents.Domain),
+                    // Test Url components
+                    urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain),
+                    urlComponentTest("EkxyAhqWRdNs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.Subdomain),
+                    urlComponentTest("FlEkcwvpDedl", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.Subdomain, UrlComponents.PortPathAnchorQuery),
+                    urlComponentTest("D9nvoh1yCroN", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Protocol, UrlComponents.Domain, UrlComponents.Subdomain, UrlComponents.PortPathAnchorQuery),
+                    urlComponentTest("CFMeyEkYXHIo", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
+                    urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com", UrlComponents.Domain),
+                    urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
+                    urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com", UrlComponents.Domain, UrlComponents.PortPathAnchorQuery),
+                    urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com", UrlComponents.Domain),
+                    urlComponentTest("C4jcyJU3OITs", "http://yummyhumans.com/path/to?everything=true", UrlComponents.Domain),
 
-            // A default account with no UrlComponents selected will use "" as the url for input
-            urlComponentTest("BS0JNF8qbJVN", "http://www.google.com/ig", true),
+                    // A default account with no UrlComponents selected will use "" as the url for input
+                    urlComponentTest("BS0JNF8qbJVN", "http://www.google.com/ig", true),
 
-            // A non-default account with no UrlComponents selected will use the full url as input
-            urlComponentTest("DTxSlWBBBIeF", "http://www.google.com/ig", false),
-    };
+                    // A non-default account with no UrlComponents selected will use the full url as input
+                    urlComponentTest("DTxSlWBBBIeF", "http://www.google.com/ig", false),
+        };
+    }
 
     // public Account(String name, String desc, String url, String username, AlgorithmType algorithm, boolean hmac,
     //                boolean trim, int length, String characterSet, LeetType leetType,
@@ -209,6 +215,8 @@ public class PasswordMakerTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        TestUtils.addBCProvider();
+        setupPWTest();
     }
 
     @AfterClass
@@ -217,7 +225,6 @@ public class PasswordMakerTest {
 
     @Before
     public void setUp() {
-        Security.addProvider(new BouncyCastleProvider());
     }
 
     @After
@@ -321,6 +328,25 @@ public class PasswordMakerTest {
         if (!Arrays.equals(sec.getData(), expectedNoTrim)) {
             fail("2 - rstr2any() failed with trim=false");
         }
+    }
+
+    @Test
+    public void testHMACEmptyPassword() throws Exception {
+        PasswordMaker pwm = new PasswordMaker();
+
+        Account a = new Account();
+        a.setId(Account.DEFAULT_ACCOUNT_URI);
+        a.addUrlComponent(UrlComponents.Domain);
+        a.setAlgorithm(AlgorithmType.SHA256);
+        a.setHmac(true);
+        a.setCharacterSet(CharacterSets.BASE_93_SET);
+        a.setLength(16);
+        a.setName("Test");
+
+        String value = saToString(pwm.makePassword(new SecureCharArray(""), a, ""));
+        // This isn't necessarily required to be this value(EMPTY_STRING), but I just want the future person to
+        // realize that they are changing something.
+        assertEquals("", value);
     }
 
     /**
