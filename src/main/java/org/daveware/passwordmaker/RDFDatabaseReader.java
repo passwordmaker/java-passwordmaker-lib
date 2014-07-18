@@ -258,7 +258,10 @@ public class RDFDatabaseReader implements DatabaseReader {
             account.setIsFolder(true);
         } else {
             account.setLeetType(LeetType.fromRdfString(element.getAttribute("NS1:whereLeetLB").trim().toLowerCase()));
-            account.setLeetLevel(LeetLevel.fromString(element.getAttribute("NS1:leetLevelLB").trim()));
+            String level = element.getAttribute("NS1:leetLevelLB").trim();
+            // chrome passwordmaker sets this to zero when leet is turned off.
+            if (level.equals("0")) level = "1";
+                account.setLeetLevel(LeetLevel.fromString(level));
 
             String algorithm = element.getAttribute("NS1:hashAlgorithmLB").trim().toLowerCase();
             Pair<AlgorithmType, Boolean> algo = fromRdfString(account, algorithm);
