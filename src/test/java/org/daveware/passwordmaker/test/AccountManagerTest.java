@@ -52,7 +52,7 @@ public class AccountManagerTest {
 
     @Test
     public void testAccountManagerUsesDefaultAccountForNonMatchingUrl() {
-        assertEquals("HRdgNiyh", saToString((SecureCharArray) manager.generatePassword("happy", "google.com")));
+        assertEquals("HRdgNiyh", saToString(manager.generatePassword("happy", "google.com")));
     }
 
     @Test
