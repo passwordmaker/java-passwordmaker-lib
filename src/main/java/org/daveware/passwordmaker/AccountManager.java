@@ -44,7 +44,7 @@ public class AccountManager implements DatabaseListener {
         return selectedProfile == null;
     }
 
-    public CharSequence generatePassword(CharSequence masterPassword, String inputText) {
+    public SecureCharArray generatePassword(CharSequence masterPassword, String inputText) {
         SecureCharArray securedMasterPassword;
         if ( ! (masterPassword instanceof SecureCharArray) ) {
             securedMasterPassword = new SecureCharArray(masterPassword.toString());
@@ -61,7 +61,7 @@ public class AccountManager implements DatabaseListener {
         if ( result != null ) {
             return result;
         }
-        return "";
+        return new SecureCharArray();
     }
 
     // Public for testing
