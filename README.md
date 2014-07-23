@@ -19,3 +19,18 @@ How to build
 Any pull requests are welcomed.
 
 This software is GPL licensed. See LICENSE for more information.
+=======
+
+How to sign the jar for deployment
+====================
+
+Just use the `build-for-central` profile.  It will build the source, javadocs, and sign the jars.
+
+    mvn clean install -Pbuild-for-central
+
+To verify the signatures
+
+    find target -name '*.asc' -print -exec gpg2 --verify {} \;
+    
+To actually deploy change the `install` maven command to `deploy`.
+This requires a `sonatype.org` jira account.  And most likely permissions from James Stapleton (@tasermonkey).
