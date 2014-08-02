@@ -7,19 +7,17 @@ This library does all of the supporting calls to implement [Passwordmaker.org](h
 This hopefully will allow both the Android edition and the java desktop edition to share a very common code base.
 
 The original passwordmaker-je was written by Dave Marotti.  James Stapleton has modified it so that it fits into a library, 
-and then made it a maven project.
+and then made it a maven project, and has added new features, and fixed minor issues to be used with the 
+android edition at https://github.com/passwordmaker/android-passwordmaker.git
 
 How to build
 ===================
 0. git clone https://github.com/passwordmaker/java-passwordmaker-lib.git
-1. Download a [java 6+ jdk](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+1. Download/install a [java 6+ jdk](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 2. Download [maven](http://maven.apache.org/)
 3. Run `$ mvn install`
 
 Any pull requests are welcomed.
-
-This software is GPL licensed. See LICENSE for more information.
-=======
 
 How to sign the jar for deployment
 ====================
@@ -34,3 +32,5 @@ To verify the signatures
     
 To actually deploy change the `install` maven command to `deploy`.
 This requires a `sonatype.org` jira account.  And most likely permissions from James Stapleton (@tasermonkey).
+
+This software is LGPL licensed. See LICENSE for more information.
