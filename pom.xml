@@ -9,6 +9,8 @@
     <version>0.9.6</version>
     <packaging>jar</packaging>
     <name>PasswordMaker Library</name>
+    <description>The library portion of the java edition of PasswordMaker.org passwordmaker.  Supports the Android passwordmaker project.</description>
+    <url>http://www.passwordmaker.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -124,6 +126,17 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                      <groupId>org.sonatype.plugins</groupId>
+                      <artifactId>nexus-staging-maven-plugin</artifactId>
+                      <version>1.6.2</version>
+                      <extensions>true</extensions>
+                      <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                      </configuration>
                     </plugin>
                 </plugins>
             </build>
