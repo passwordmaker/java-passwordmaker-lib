@@ -17,6 +17,7 @@
  */
 package org.daveware.passwordmaker;
 
+import jdk.internal.jfr.events.ThrowablesEvent;
 import org.daveware.passwordmaker.util.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -311,6 +312,18 @@ public class RDFDatabaseReader implements DatabaseReader {
                 } else {
                     iPattern = MAX_PATTERNS + 1;
                 }
+            }
+        }
+
+        if ( account.isRoot() ) {
+            // The root node isn't really an account, just a starting point for our account tree.
+            if ( ! account.getUrlComponents().isEmpty() || ! account.getUrl().isEmpty()
+                    || ! account.getUsername().isEmpty() || !account.getPatterns().isEmpty() ) {
+                logger.info("Clear out junk settings on the ROOT account.");
+                account.clearUrlComponents();
+                account.setUrl("");
+                account.setUsername("");
+                account.getPatterns().clear();
             }
         }
 
