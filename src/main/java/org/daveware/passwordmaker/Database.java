@@ -317,6 +317,30 @@ public class Database {
         return retValue;
     }
 
+    public List<Account> getAllAccounts() {
+        Set<Account> acc = new HashSet<Account>();
+        getAllAccounts(getRootAccount(), acc);
+        List<Account> sorted = new ArrayList<Account>(acc);
+        Collections.sort(sorted, new Comparator<Account>() {
+            @Override
+            public int compare(Account o1, Account o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+        return sorted;
+    }
+
+    private void getAllAccounts(Account base, Collection<Account> into) {
+        for (Account c : base.getChildren()) {
+            if ( c.hasChildren() ) {
+                getAllAccounts(c, into);
+            } else {
+                into.add(c);
+            }
+        }
+    }
+
+
     /**
      * Locates an account, given an id.
      *
