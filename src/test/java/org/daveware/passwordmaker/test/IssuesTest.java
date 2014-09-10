@@ -24,17 +24,17 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.daveware.passwordmaker.test.TestUtils.*;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class IssuesTest {
 
     public static final String SAMPLE_2_RDF = "/org/daveware/passwordmaker/test/sample2.rdf";
+    public static final String SAMPLE_SEL_WRONG_PROFILE = "issue_selecting_wrong_profile.rdf";
+    public static final String SAMPLE_SEL_WRONG_PROFILE_MULTI = "issue_selecting_wrong_profile_multi.rdf";
 
     @BeforeClass
     public static void setupClass() {
@@ -89,6 +89,32 @@ public class IssuesTest {
         String actual = output.toString().replaceAll("\n", "");
         assertEquals( expectedOutput, actual);
     }
+
+    @Test
+    public void testIssueOfSelectingWrongProfile() throws Exception {
+        RDFDatabaseReader reader = new RDFDatabaseReader();
+        InputStream source = IssuesTest.class.getResourceAsStream(SAMPLE_SEL_WRONG_PROFILE);
+        Database db = reader.read(source);
+        source.close();
+        AccountManager accountManager = new AccountManager();
+        accountManager.getPwmProfiles().swapAccounts(db);
+        assertEquals(1, accountManager.getPwmProfiles().getAllAccounts().size());
+        assertEquals("3BYc3EMvAVfS", saToString(accountManager.generatePassword("happy", "cnn.com")));
+    }
+
+    @Test
+    public void testIssueOfSelectingWrongProfileMultiProfs() throws Exception {
+        RDFDatabaseReader reader = new RDFDatabaseReader();
+        InputStream source = IssuesTest.class.getResourceAsStream(SAMPLE_SEL_WRONG_PROFILE_MULTI);
+        Database db = reader.read(source);
+        source.close();
+        AccountManager accountManager = new AccountManager();
+        accountManager.getPwmProfiles().swapAccounts(db);
+        assertEquals(2, accountManager.getPwmProfiles().getAllAccounts().size());
+        assertEquals("3BYc3EMvAVfS", saToString(accountManager.generatePassword("happy", "cnn.com")));
+        assertEquals("1XMuoKqNXUMqUv", saToString(accountManager.generatePassword("happy", "everywhere.com")));
+    }
+
 
     private static Map<String, String> getIdToNameMap() {
         Map<String, String> m = new HashMap<String, String>();
