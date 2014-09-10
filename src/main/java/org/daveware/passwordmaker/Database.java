@@ -37,7 +37,7 @@ public class Database {
     // http://stackoverflow.com/questions/1658702/how-do-i-make-a-class-extend-observable-when-it-has-extended-another-class-too
     private final CopyOnWriteArrayList<DatabaseListener> listeners = new CopyOnWriteArrayList<DatabaseListener>();
     private Logger logger = Logger.getLogger(getClass().getName());
-    private Account rootAccount = new Account("default", "", "");
+    private Account rootAccount = new Account("root", "", "");
     // The settings for the firefox plugin are stored in this file as well. This makes sure they are
     // preserved when saving back to the RDF.
     private HashMap<String, String> globalSettings = new HashMap<String, String>();
