@@ -201,10 +201,11 @@ public class AccountManager implements DatabaseListener {
     }
 
 
-    public Account getDefaultAccount() {
+    public Account getDefaultAccount() throws NoSuchElementException {
         Account account = pwmProfiles.findAccountById(Account.DEFAULT_ACCOUNT_URI);
         if ( account != null ) return account;
-        return pwmProfiles.getRootAccount();
+        // OK, somehow there isn't a "default" account loaded (from the import database feature)
+        throw new NoSuchElementException("Unable to get default account");
     }
 
     public boolean matchesPasswordHash(SecureCharArray masterPassword) {
