@@ -3,8 +3,6 @@ package org.daveware.passwordmaker.test;
 import org.daveware.passwordmaker.*;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class AccountManagerSamples {

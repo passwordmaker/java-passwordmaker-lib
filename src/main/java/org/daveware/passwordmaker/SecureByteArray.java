@@ -204,7 +204,7 @@ public class SecureByteArray {
 
         byte[] newData = new byte[size];
 
-        if (retainData == true) {
+        if (retainData) {
             int limit = (size <= data.length) ? size : data.length;
             for (int i = 0; i < size; i++) {
                 if (i < limit)

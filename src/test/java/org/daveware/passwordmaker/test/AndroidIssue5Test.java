@@ -22,7 +22,6 @@ public class AndroidIssue5Test {
     public static final String GROUP_1_ID = "rdf:#$pehSJ2";
     public static final String GROUP_2_ID = "rdf:#$TZRYl3";
     public static final String GROUP_3_ID = "rdf:#$AG62u2";
-    private static byte[] xml;
     private static Database db;
     private static Account rootAccount;
 
@@ -32,7 +31,7 @@ public class AndroidIssue5Test {
         configure_logger.setLevel(Level.FINE);
         TestUtils.addBCProvider();
 
-        xml = readResourceAsByteArray("sample3.xml");
+        byte[] xml = readResourceAsByteArray("sample3.xml");
         RDFDatabaseReader reader = new RDFDatabaseReader();
         reader.setBuggyAlgoUseAction(DatabaseReader.BuggyAlgoAction.CONVERT);
         db = reader.read(new ByteArrayInputStream(xml));

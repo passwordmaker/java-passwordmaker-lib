@@ -17,7 +17,6 @@
  */
 package org.daveware.passwordmaker;
 
-import jdk.internal.jfr.events.ThrowablesEvent;
 import org.daveware.passwordmaker.util.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,9 +27,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Implements the DatabaseReader interface to allow reading of RDF files.

@@ -72,8 +72,7 @@ public class LeetLevel implements Comparable<LeetLevel> {
             int i = Integer.parseInt(str);
             if (i >= 1 && i <= LEVELS.length)
                 return LEVELS[i - 1];
-        } catch (Exception e) {
-        }
+        } catch (Exception ignored) {}
 
         String exceptionStr = String.format("Invalid LeetLevel '%1s', valid values are '1' to '9'", str);
         throw new Exception(exceptionStr);
