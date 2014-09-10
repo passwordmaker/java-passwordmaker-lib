@@ -636,6 +636,11 @@ public final class Account implements Comparable<Account> {
             return result;
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
     /**
      * Determines if these are the same object or not. "Same objects" are those that have
      * identical IDs.
