@@ -65,7 +65,7 @@ public class LeetLevel implements Comparable<LeetLevel> {
      */
     public static LeetLevel fromString(String str)
             throws Exception {
-        if (str.length() == 0)
+        if (str == null || str.equalsIgnoreCase("null") || str.length() == 0)
             return LEVEL1;
 
         try {
