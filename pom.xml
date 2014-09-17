@@ -7,10 +7,48 @@
     <groupId>org.passwordmaker</groupId>
     <artifactId>passwordmaker-je-lib</artifactId>
     <version>0.9.8</version>
+    <packaging>jar</packaging>
+    <name>PasswordMaker Library</name>
+    <description>The library portion of the java edition of PasswordMaker.org passwordmaker.  Supports the Android passwordmaker project.</description>
+    <url>http://www.passwordmaker.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>James Stapleton</name>
+            <email>github@tasermonkeys.com</email>
+            <organization>Passwordmaker.org</organization>
+            <organizationUrl>http://www.passwordmaker.org</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:passwordmaker/java-passwordmaker-lib.git</connection>
+        <developerConnection>scm:git:git@github.com:passwordmaker/java-passwordmaker-lib.git</developerConnection>
+        <url>git@github.com:passwordmaker/java-passwordmaker-lib.git</url>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -33,5 +71,75 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    <profiles>
+        <profile>
+            <!--
+              This profile is intental so that developers don't have to have everything setup to
+              build and develop.
+            -->
+            <id>build-for-central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--
+                      This requires gpg2 to be installed on your system.
+                      Please see: http://central.sonatype.org/pages/working-with-pgp-signatures.html
+                      -and- http://central.sonatype.org/pages/apache-maven.html#gpg-signed-components
+                      If gpg2 is in your path, it seems to just works. And you don't need to add your
+                      keyfile password to your settings.xml, if you have the gpg2 agent running.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                      <groupId>org.sonatype.plugins</groupId>
+                      <artifactId>nexus-staging-maven-plugin</artifactId>
+                      <version>1.6.2</version>
+                      <extensions>true</extensions>
+                      <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                      </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
