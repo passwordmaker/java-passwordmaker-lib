@@ -77,8 +77,8 @@ public class LeetEncoder {
         int currentRetByte = 0;                       // Index of current ret byte
 
         if (level.compareTo(LeetLevel.LEVEL1) >= 0 && level.compareTo(LeetLevel.LEVEL9) <= 0) {
-            for (int i = 0; i < messageBytes.length; i++) {
-                char b = Character.toLowerCase(messageBytes[i]);
+            for (char messageByte : messageBytes) {
+                char b = Character.toLowerCase(messageByte);
                 if (b >= 'a' && b <= 'z') {
                     for (int j = 0; j < LEVELS[level.getLevel() - 1][b - 'a'].length(); j++)
                         retBytes[currentRetByte++] = LEVELS[level.getLevel() - 1][b - 'a'].charAt(j);

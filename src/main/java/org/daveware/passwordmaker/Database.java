@@ -37,7 +37,7 @@ public class Database {
     // http://stackoverflow.com/questions/1658702/how-do-i-make-a-class-extend-observable-when-it-has-extended-another-class-too
     private final CopyOnWriteArrayList<DatabaseListener> listeners = new CopyOnWriteArrayList<DatabaseListener>();
     private Logger logger = Logger.getLogger(getClass().getName());
-    private Account rootAccount = new Account("default", "http://domain.com", "username");
+    private Account rootAccount = new Account("root", "", "");
     // The settings for the firefox plugin are stored in this file as well. This makes sure they are
     // preserved when saving back to the RDF.
     private HashMap<String, String> globalSettings = new HashMap<String, String>();
@@ -317,6 +317,30 @@ public class Database {
         return retValue;
     }
 
+    public List<Account> getAllAccounts() {
+        Set<Account> acc = new HashSet<Account>();
+        getAllAccounts(getRootAccount(), acc);
+        List<Account> sorted = new ArrayList<Account>(acc);
+        Collections.sort(sorted, new Comparator<Account>() {
+            @Override
+            public int compare(Account o1, Account o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+        return sorted;
+    }
+
+    private void getAllAccounts(Account base, Collection<Account> into) {
+        for (Account c : base.getChildren()) {
+            if ( c.hasChildren() ) {
+                getAllAccounts(c, into);
+            } else {
+                into.add(c);
+            }
+        }
+    }
+
+
     /**
      * Locates an account, given an id.
      *
@@ -382,7 +406,7 @@ public class Database {
      */
     private Account findAccountByUrl(Account parent, String url) {
         // First search the parent
-        if (AccountPatternMatcher.matchUrl(parent, url))
+        if (AccountPatternMatcher.matchUrl(parent, url) && !parent.isRoot())
             return parent;
         for (Account child : parent.getChildren()) {
             Account foundAccount = findAccountByUrl(child, url);

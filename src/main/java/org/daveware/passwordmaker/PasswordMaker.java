@@ -54,7 +54,7 @@ public class PasswordMaker {
     public static void setDefaultCryptoProvider(String provider) {
         CRYPTO_PROVIDER = provider;
     }
-    public static String getDefaultCryptoProvider() { return CRYPTO_PROVIDER;  };
+    public static String getDefaultCryptoProvider() { return CRYPTO_PROVIDER;  }
 
     /**
      * Calculates the strength of a password.

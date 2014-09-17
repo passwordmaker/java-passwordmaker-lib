@@ -89,7 +89,6 @@ public class LeetTest {
                     {"!@#$%^&*()", "!@#$%^&*()"},
                     {"'\";:,./<>?`~\\|", "'\";:,./<>?`~\\|"},},};
 
-    ;
     static LeetData[][] DATA;
 
     public LeetTest() {
@@ -133,7 +132,7 @@ public class LeetTest {
             int iLevel = level.getLevel() - 1;
             for (int test = 0; test < DATA[iLevel].length; test++) {
                 LeetEncoder.leetConvert(level, DATA[iLevel][test].orig);
-                if (Arrays.equals(DATA[iLevel][test].conv.getData(), DATA[iLevel][test].orig.getData()) == false) {
+                if (!Arrays.equals(DATA[iLevel][test].conv.getData(), DATA[iLevel][test].orig.getData())) {
                     System.out.println("Leet[" + iLevel + "][" + test + "]");
                     System.out.println("Expected: " + new String(DATA[iLevel][test].orig.getData()));
                     System.out.println("Received: " + new String(DATA[iLevel][test].conv.getData()));

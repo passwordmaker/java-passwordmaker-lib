@@ -203,7 +203,7 @@ public class SecureCharArray implements CharSequence {
 
         char[] newData = new char[size];
 
-        if (retainData == true) {
+        if (retainData) {
             int limit = (size <= data.length) ? size : data.length;
             for (int i = 0; i < limit; i++) {
                 if (i < limit)

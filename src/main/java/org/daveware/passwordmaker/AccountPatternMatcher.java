@@ -49,10 +49,7 @@ public class AccountPatternMatcher {
                 // meh
             }
         }
-        if ( account.getUrl().equalsIgnoreCase(url) ) {
-            return true;
-        }
-        return false;
+        return account.getUrl().equalsIgnoreCase(url);
     }
 
     private static boolean regexMatch(String regex, String text) {

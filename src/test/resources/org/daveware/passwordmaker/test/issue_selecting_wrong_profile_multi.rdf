@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF:RDF xmlns:NS1="http://passwordmaker.mozdev.org/rdf#" xmlns:NC="http://home.netscape.com/NC-rdf#"
+         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <RDF:Seq RDF:about="http://passwordmaker.mozdev.org/accounts">
+        <RDF:li RDF:resource="rdf:#$d18f9c5d878e2d258b2a692881bd92363152fa78"/>
+        <RDF:li RDF:resource="rdf:#$d1809254878121138B2A698881bd923631527778"/>
+    </RDF:Seq>c
+    <RDF:Description RDF:about="http://passwordmaker.mozdev.org/accounts" NS1:name="default" NS1:description=""
+                     NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8"
+                     NS1:usernameTB="username" NS1:counter=""
+                     NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&amp;*()_-+={}|[]\:&quot;;'&lt;&gt;?,./"
+                     NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://domain.com"/>
+    <RDF:Description RDF:about="rdf:#$d18f9c5d878e2d258b2a692881bd92363152fa78" NS1:name="Default2" NS1:description=""
+                     NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="sha256" NS1:passwordLength="12"
+                     NS1:usernameTB="" NS1:counter=""
+                     NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" NS1:prefix="3"
+                     NS1:suffix="" NS1:autoPopulate="false" NS1:protocolCB="false" NS1:subdomainCB="false"
+                     NS1:domainCB="true" NS1:pathCB="false" NS1:pattern0="nowhere.com" NS1:patterntype0="wildcard"
+                     NS1:patternenabled0="true" NS1:patterndesc0="nowhere.com: Imported from classic"
+                     NS1:pattern1="somewhere.com" NS1:patterntype1="wildcard" NS1:patternenabled1="true"
+                     NS1:patterndesc1="somewhere.com: Imported from classic" NS1:pattern2="anotherwhere.com"
+                     NS1:patterntype2="wildcard" NS1:patternenabled2="true"
+                     NS1:patterndesc2="anotherwhere.com: Imported from classic" NS1:pattern3="location.com"
+                     NS1:patterntype3="wildcard" NS1:patternenabled3="true"
+                     NS1:patterndesc3="location.com: Imported from classic" NS1:pattern4="anywhere.com"
+                     NS1:patterntype4="wildcard" NS1:patternenabled4="true"
+                     NS1:patterndesc4="anywhere.com: Imported from classic"/>
+    <RDF:Description RDF:about="rdf:#$d1809254878121138B2A698881bd923631527778" NS1:name="Something" NS1:description=""
+                     NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="sha256" NS1:passwordLength="14"
+                     NS1:usernameTB="" NS1:counter="41"
+                     NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" NS1:prefix="1"
+                     NS1:suffix="" NS1:autoPopulate="false" NS1:protocolCB="false" NS1:subdomainCB="false"
+                     NS1:domainCB="true" NS1:pathCB="false" NS1:pattern0="everywhere.com" NS1:patterntype0="wildcard"
+                     NS1:patternenabled0="true" NS1:patterndesc0="everywhere.com: Imported from classic" />
+
+    <RDF:Description RDF:about="http://passwordmaker.mozdev.org/globalSettings" NS1:MASTER_PWD_SALT=""
+                     NS1:STORE_MASTER_PWD_HASH="false" NS1:MASTER_PWD_HASH=""
+                     NS1:favorites=""/>
+</RDF:RDF>

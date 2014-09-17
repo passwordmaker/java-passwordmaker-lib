@@ -18,12 +18,10 @@
 package org.daveware.passwordmaker.test;
 
 import junit.framework.Assert;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.daveware.passwordmaker.*;
 import org.daveware.passwordmaker.Account.UrlComponents;
 import org.junit.*;
 
-import java.security.Security;
 import java.util.Arrays;
 import java.util.EnumSet;
 

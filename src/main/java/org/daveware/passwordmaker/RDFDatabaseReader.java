@@ -27,9 +27,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Implements the DatabaseReader interface to allow reading of RDF files.
@@ -110,7 +112,44 @@ public class RDFDatabaseReader implements DatabaseReader {
         createParentChildRelationships(db, descriptionMap, seqMap);
 
         // woot!
+        return ensureDefaultProfileExist(db);
+    }
+
+    public static Database ensureDefaultProfileExist(Database db) throws Exception {
+        Account account = db.findAccountById(Account.DEFAULT_ACCOUNT_URI);
+        if (account != null)
+            return db;
+
+        List<Account> allAccounts = db.getAllAccounts();
+        if ( allAccounts.isEmpty()) {
+            db.addDefaultAccount();
+            return db;
+        }
+        if (allAccounts.size() == 1) {
+            // An invalid rdf import may not actually use the default URI, so nice heuristic would be if its a single one
+            // we can just re-id it to the default account uri.
+            allAccounts.get(0).setId(Account.DEFAULT_ACCOUNT_URI);
+            return db;
+        }
+        // Ok, lets search for a single account this named closed to default.
+        List<Account> defaultNamedAccounts = findMatchingNameCI(allAccounts, ".*Default.*");
+        if (defaultNamedAccounts.size() == 1) {
+            defaultNamedAccounts.get(0).setId(Account.DEFAULT_ACCOUNT_URI);
+            return db;
+        }
+        // OK give up, lets add a default account...The user probably won't like this, but its better than it using a
+        // hidden account!
+        db.addDefaultAccount();
         return db;
+    }
+
+    public static List<Account> findMatchingNameCI(List<Account> allAccounts, String regex) {
+        Pattern namePattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        List<Account> matching = new ArrayList<Account>();
+        for (Account acc : allAccounts ) {
+            if (namePattern.matcher(acc.getName()).matches()) matching.add(acc);
+        }
+        return matching;
     }
 
     /**
@@ -311,6 +350,18 @@ public class RDFDatabaseReader implements DatabaseReader {
                 } else {
                     iPattern = MAX_PATTERNS + 1;
                 }
+            }
+        }
+
+        if ( account.isRoot() ) {
+            // The root node isn't really an account, just a starting point for our account tree.
+            if ( ! account.getUrlComponents().isEmpty() || ! account.getUrl().isEmpty()
+                    || ! account.getUsername().isEmpty() || !account.getPatterns().isEmpty() ) {
+                logger.info("Clear out junk settings on the ROOT account.");
+                account.clearUrlComponents();
+                account.setUrl("");
+                account.setUsername("");
+                account.getPatterns().clear();
             }
         }
 

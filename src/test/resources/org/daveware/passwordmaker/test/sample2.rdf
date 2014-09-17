@@ -4,7 +4,7 @@
     <RDF:li RDF:resource="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46"/>
     <RDF:li RDF:resource="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f"/>
   </RDF:Seq>
-  <RDF:Description RDF:about="http://passwordmaker.mozdev.org/accounts" NS1:name="default" NS1:description="" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8" NS1:usernameTB="username" NS1:counter="" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&amp;*()_-+={}|[]\:&quot;;'&lt;&gt;?,./" NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse="http://domain.com"/>
+  <RDF:Description RDF:about="http://passwordmaker.mozdev.org/accounts" NS1:name="root" NS1:description="" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8" NS1:usernameTB="" NS1:counter="" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&amp;*()_-+={}|[]\:&quot;;'&lt;&gt;?,./" NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:urlToUse=""/>
   <RDF:Description RDF:about="http://passwordmaker.mozdev.org/defaults" NS1:name="default" NS1:description="" NS1:whereLeetLB="off" NS1:leetLevelLB="1" NS1:hashAlgorithmLB="md5" NS1:passwordLength="8" NS1:usernameTB="" NS1:counter="" NS1:charset="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" NS1:prefix="" NS1:suffix="" NS1:autoPopulate="false" NS1:protocolCB="false" NS1:subdomainCB="false" NS1:domainCB="true" NS1:pathCB="false"/>
   <RDF:Description RDF:about="rdf:#$58fc633788509272e02e72c9b0c048782cde5d46" NS1:name="Personal" NS1:description=""/>
   <RDF:Description RDF:about="rdf:#$82202fee07f636e851ace3a6e65eaf3428e9c02f" NS1:name="Work" NS1:description=""/>
