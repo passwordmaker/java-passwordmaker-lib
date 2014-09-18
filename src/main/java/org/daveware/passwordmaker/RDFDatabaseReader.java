@@ -342,6 +342,7 @@ public class RDFDatabaseReader implements DatabaseReader {
 
                 if (pattern.length() > 0 || patternType.length() > 0 || patternEnabled.length() > 0 || patternDesc.length() > 0) {
                     AccountPatternData data = new AccountPatternData();
+                    if ( patternDesc.isEmpty() ) patternDesc = pattern;
                     data.setPattern(pattern);
                     data.setType(AccountPatternType.fromString(patternType));
                     data.setEnabled(patternEnabled.compareTo("true") == 0);
