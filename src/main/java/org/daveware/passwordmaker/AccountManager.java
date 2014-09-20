@@ -61,7 +61,25 @@ public class AccountManager implements DatabaseListener {
         return selectedProfile == null;
     }
 
+    /**
+     * Same as the other version with username being sent null.
+     *
+     * @see #generatePassword(CharSequence, String, String)
+     */
     public SecureCharArray generatePassword(CharSequence masterPassword, String inputText) {
+        return generatePassword(masterPassword, inputText, null);
+    }
+
+    /**
+     * Generate the password based on the masterPassword from the matching account from the inputtext
+     *
+     * @param masterPassword - the masterpassword to use
+     * @param inputText - the input text // url to use to find the account and generate the password
+     * @param username - (optional) the username to override the account's username unless its nil
+     *
+     * @return the generated password based on the matching account
+     */
+    public SecureCharArray generatePassword(CharSequence masterPassword, String inputText, String username) {
         SecureCharArray securedMasterPassword;
         if ( ! (masterPassword instanceof SecureCharArray) ) {
             securedMasterPassword = new SecureCharArray(masterPassword.toString());
@@ -71,7 +89,11 @@ public class AccountManager implements DatabaseListener {
         SecureCharArray result = null;
         try {
             Account accountToUse = getAccountForInputText(inputText);
-            result = pwm.makePassword(securedMasterPassword, accountToUse, inputText);
+            // use the one that takes a username if the username isn't null
+            if ( username != null )
+                result = pwm.makePassword(securedMasterPassword, accountToUse, inputText, username);
+            else
+                result = pwm.makePassword(securedMasterPassword, accountToUse, inputText);
         } catch (Exception e) {
             e.printStackTrace();
         }

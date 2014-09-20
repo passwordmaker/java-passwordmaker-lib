@@ -283,10 +283,11 @@ public class PasswordMaker {
      * @param masterPassword The password to use as a key for the various algorithms.
      * @param account        The account with the specific settings for the hash.
      * @param inputText      The text to use as the input into the password maker algorithm
+     * @param username       The username to use for generating the password
      * @return A SecureCharArray with the hashed data.
      * @throws Exception if something bad happened.
      */
-    public SecureCharArray makePassword(SecureCharArray masterPassword, Account account, final String inputText)
+    public SecureCharArray makePassword(SecureCharArray masterPassword, Account account, final String inputText, final String username)
             throws Exception {
 
         // HMAC algorithm requires a key that is >0 length.
@@ -304,7 +305,7 @@ public class PasswordMaker {
             if (account.getCharacterSet().length() < 2)
                 throw new Exception("Account contains a character set that is too short");
 
-            data = new SecureCharArray(getModifiedInputText(inputText, account) + account.getUsername() + account.getModifier());
+            data = new SecureCharArray(getModifiedInputText(inputText, account) + username + account.getModifier());
 
             // Use leet before hashing
             if (account.getLeetType() == LeetType.BEFORE || account.getLeetType() == LeetType.BOTH) {
@@ -361,13 +362,29 @@ public class PasswordMaker {
 
     /**
      * Generates a hash of the master password with settings from the account.
+     * It will use the username assigned to the account.
+     *
+     * @param masterPassword The password to use as a key for the various algorithms.
+     * @param account        The account with the specific settings for the hash.
+     * @param inputText      The text to use as the input into the password maker algorithm
+     * @return A SecureCharArray with the hashed data.
+     * @throws Exception if something bad happened.
+     */
+    public SecureCharArray makePassword(final SecureCharArray masterPassword, final Account account, final String inputText)
+            throws Exception {
+        return makePassword(masterPassword, account, inputText, account.getUsername());
+
+    }
+
+    /**
+     * Generates a hash of the master password with settings from the account.
      *
      * @param masterPassword The password to use as a key for the various algorithms.
      * @param account        The account with the specific settings for the hash. Uses account.getUrl() as the inputText
      * @return A SecureCharArray with the hashed data.
      * @throws Exception if something bad happened.
      */
-    public SecureCharArray makePassword(SecureCharArray masterPassword, Account account)
+    public SecureCharArray makePassword(final SecureCharArray masterPassword, final Account account)
             throws Exception {
         return makePassword(masterPassword, account, account.getUrl());
     }
