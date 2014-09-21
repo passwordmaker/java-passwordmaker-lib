@@ -17,8 +17,10 @@
  */
 package org.daveware.passwordmaker;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
-
+import static org.daveware.passwordmaker.StringEncodingUtils.bytesToCharArrayUTFNIO;
 /**
  * Provides an array capable of erasing the contents upon request.
  * <p/>
@@ -48,10 +50,22 @@ public class SecureCharArray implements CharSequence {
             data[i] = 0;
     }
 
+    /**
+     * @param bytes - assumes no character encoding... Each byte will become its own char
+     */
     public SecureCharArray(byte[] bytes) {
-        data = new char[bytes.length];
-        for (int i = 0; i < data.length; i++)
-            data[i] = (char) (bytes[i] & 0xFF);
+        this(bytes, false);
+    }
+
+    protected SecureCharArray(byte[] bytes, boolean decodeAsUTF8) {
+        if ( ! decodeAsUTF8 ) {
+            data = new char[bytes.length];
+            for (int i = 0; i < data.length; i++)
+                data[i] = (char) (bytes[i] & 0xFF);
+        } else {
+            // this returns a copy of the bytes
+            data = bytesToCharArrayUTFNIO(bytes);
+        }
     }
 
     public SecureCharArray(char[] chars) {

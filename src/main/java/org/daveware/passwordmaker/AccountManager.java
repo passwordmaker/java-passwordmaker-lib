@@ -79,14 +79,14 @@ public class AccountManager implements DatabaseListener {
      *
      * @return the generated password based on the matching account
      */
-    public SecureCharArray generatePassword(CharSequence masterPassword, String inputText, String username) {
-        SecureCharArray securedMasterPassword;
-        if ( ! (masterPassword instanceof SecureCharArray) ) {
-            securedMasterPassword = new SecureCharArray(masterPassword.toString());
+    public SecureUTF8String generatePassword(CharSequence masterPassword, String inputText, String username) {
+        SecureUTF8String securedMasterPassword;
+        if ( ! (masterPassword instanceof SecureUTF8String) ) {
+            securedMasterPassword = new SecureUTF8String(masterPassword.toString());
         } else {
-            securedMasterPassword = (SecureCharArray)masterPassword;
+            securedMasterPassword = (SecureUTF8String)masterPassword;
         }
-        SecureCharArray result = null;
+        SecureUTF8String result = null;
         try {
             Account accountToUse = getAccountForInputText(inputText);
             // use the one that takes a username if the username isn't null
@@ -100,7 +100,7 @@ public class AccountManager implements DatabaseListener {
         if ( result != null ) {
             return result;
         }
-        return new SecureCharArray();
+        return new SecureUTF8String();
     }
 
     // Public for testing
@@ -247,7 +247,7 @@ public class AccountManager implements DatabaseListener {
         throw new NoSuchElementException("Unable to get default account");
     }
 
-    public boolean matchesPasswordHash(SecureCharArray masterPassword) {
+    public boolean matchesPasswordHash(SecureUTF8String masterPassword) {
         if ( ! hasPasswordHash() ) {
             return true;
         }
@@ -271,7 +271,7 @@ public class AccountManager implements DatabaseListener {
         this.passwordSalt = UUID.randomUUID().toString();
 
         try {
-            this.currentPasswordHash = pwm.makePassword(new SecureCharArray(newPassword),
+            this.currentPasswordHash = pwm.makePassword(new SecureUTF8String(newPassword),
                     masterPwdHashAccount, getPasswordSalt());
         } catch (Exception ignored) {}
         setStorePasswordHash(true);

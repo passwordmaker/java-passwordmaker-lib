@@ -17,6 +17,9 @@
  */
 package org.daveware.passwordmaker;
 
+import static org.daveware.passwordmaker.StringEncodingUtils.charArrayToBytesUTFNIO;
+import static org.daveware.passwordmaker.StringEncodingUtils.stringAsUTF8ByteArray;
+
 /**
  * Provides an array capable of erasing the contents upon request.
  * <p/>
@@ -53,10 +56,17 @@ public class SecureByteArray {
     }
 
     public SecureByteArray(char[] chars) {
-        data = new byte[chars.length];
-        for (int i = 0; i < data.length; i++)
-            data[i] = (byte) chars[i];
+        this(chars, false);
+    }
 
+    protected SecureByteArray(char[] chars, boolean encodeUTF8) {
+        if ( ! encodeUTF8 ) {
+            data = new byte[chars.length];
+            for (int i = 0; i < data.length; i++)
+                data[i] = (byte) chars[i];
+        } else {
+            data = charArrayToBytesUTFNIO(chars);
+        }
         // TODO: This might not be the best way to convert from char to byte as
         // there may be weird character encodings.  Maybe char & 0x7F ?
     }
@@ -69,14 +79,15 @@ public class SecureByteArray {
 
     /**
      * Creates the object from a string (don't pass passwords in this way).
-     *
+     * This will decode the string as a UTF-8 byte array
      * @param str The string object to get the data from.
      */
     public SecureByteArray(String str) {
-        // TODO: does this include the null? We don't want the null...
-        // FIXME:
-        // XXX:
-        data = str.getBytes();
+        data = stringAsUTF8ByteArray(str);
+    }
+
+    public SecureByteArray(SecureUTF8String str) {
+        this(str.getData(), true);
     }
 
     /**

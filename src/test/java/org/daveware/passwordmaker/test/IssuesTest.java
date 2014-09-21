@@ -27,6 +27,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+import static org.daveware.passwordmaker.StringEncodingUtils.bytesToCharArrayUTFNIO;
+import static org.daveware.passwordmaker.StringEncodingUtils.charArrayToBytesUTFNIO;
 import static org.daveware.passwordmaker.test.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 
@@ -50,7 +53,7 @@ public class IssuesTest {
         account.setCharacterSet(CharacterSets.ALPHANUMERIC);
         account.clearUrlComponents();
         account.addUrlComponent(Account.UrlComponents.Domain);
-        final SecureCharArray masterPassword = new SecureCharArray("happy");
+        final SecureUTF8String masterPassword = new SecureUTF8String("happy");
         saToString(pm.makePassword(masterPassword, account, "google.com"));
         assertEquals("HRdgNiyh", saToString(pm.makePassword(masterPassword, account, "google.com")));
         assertEquals("DsTpW36p", saToString(pm.makePassword(masterPassword, account, "cnn.com")));
@@ -126,5 +129,21 @@ public class IssuesTest {
         m.put("rdf:#$daec72c4b98769c07069d85f512e069cffdd407d","stackoverflow");
         m.put("rdf:#$32232ef276daca6638ac3826e388e2bb20f841f1","github.com");
         return m;
+    }
+
+    @Test
+    public void testSomeEncoding() throws Exception {
+        final String normalPass = "PasswordMaker\u00A9\u20AC\uD852\uDF62";
+        //String normalPass = "happy";
+        char[] normal = (normalPass).toCharArray();
+        byte[] actual = charArrayToBytesUTFNIO(normal);
+        byte[] expected = normalPass.getBytes("UTF-8");
+        String actualHexDump = printHexBinary(actual);
+        String expectedHexDump = printHexBinary(expected);
+
+        char[] reverseCommute = bytesToCharArrayUTFNIO(actual);
+        assertEquals(normalPass, new String(reverseCommute));
+
+        assertEquals("pass=" + normalPass, actualHexDump, expectedHexDump);
     }
 }

@@ -35,17 +35,17 @@ public class PasswordMakerMasterPasswordVerificationTest {
 
     @Test
     public void testEmptyMasterPassword() throws Exception {
-        assertEquals("gNV", saToString(pwm.generateVerificationCode(new SecureCharArray(""))));
+        assertEquals("gNV", saToString(pwm.generateVerificationCode(new SecureUTF8String(""))));
     }
 
     @Test
     public void testVeryShortMasterPassword() throws Exception {
-        assertEquals("YJO", saToString(pwm.generateVerificationCode(new SecureCharArray("h"))));
+        assertEquals("YJO", saToString(pwm.generateVerificationCode(new SecureUTF8String("h"))));
     }
 
     @Test
     public void testLongMasterPassword() throws Exception {
-        assertEquals("RHd", saToString(pwm.generateVerificationCode(new SecureCharArray("happybirthday"))));
+        assertEquals("RHd", saToString(pwm.generateVerificationCode(new SecureUTF8String("happybirthday"))));
     }
 
     /**
@@ -64,6 +64,6 @@ public class PasswordMakerMasterPasswordVerificationTest {
         profile.setPrefix("");
         profile.setSuffix("");
         profile.setLeetType(LeetType.NONE);
-        assertEquals("KPA", saToString(pwm.makePassword(new SecureCharArray("happy"), profile, "")));
+        assertEquals("KPA", saToString(pwm.makePassword(new SecureUTF8String("happy"), profile, "")));
     }
 }

@@ -18,10 +18,7 @@
 package org.daveware.passwordmaker.test;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.daveware.passwordmaker.Account;
-import org.daveware.passwordmaker.AccountManager;
-import org.daveware.passwordmaker.PasswordMaker;
-import org.daveware.passwordmaker.SecureCharArray;
+import org.daveware.passwordmaker.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,7 +61,7 @@ public class AccountManagerTest {
     public void testDefaultAccountUseGivenUrl() throws Exception {
         Account account = manager.getDefaultAccount();
         PasswordMaker pwm = manager.getPwm();
-        assertEquals("HRdgNiyh", saToString(pwm.makePassword(new SecureCharArray("happy"), account, "google.com")));
+        assertEquals("HRdgNiyh", saToString(pwm.makePassword(new SecureUTF8String("happy"), account, "google.com")));
     }
 
     @Test
