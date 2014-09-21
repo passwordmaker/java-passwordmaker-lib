@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.security.Security;
 
 public class TestUtils {
+    public static final String nonAsciiPassword = "PasswordMaker\u00A9\u20AC\uD852\uDF62";
+
     public static String saToString(SecureCharArray arr) {
         return new String(arr.getData());
     }

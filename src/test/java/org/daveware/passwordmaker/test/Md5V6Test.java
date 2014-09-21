@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.daveware.passwordmaker.test.TestUtils.addBCProvider;
 import static org.daveware.passwordmaker.test.TestUtils.saToString;
 import static org.junit.Assert.assertEquals;
+import static org.daveware.passwordmaker.test.TestUtils.nonAsciiPassword;
 
 public class Md5V6Test {
 
@@ -42,5 +43,18 @@ public class Md5V6Test {
         account.addUrlComponent(Account.UrlComponents.Domain);
         final SecureUTF8String masterPassword = new SecureUTF8String("happy");
         assertEquals("6172", saToString(pm.makePassword(masterPassword, account, "random.co.uk")));
+    }
+
+    @Test
+    public void testV6WithUnicodePassword() throws Exception {
+        PasswordMaker pm = new PasswordMaker();
+        Account account = new Account();
+        account.setAlgorithm(AlgorithmType.MD5);
+        account.setTrim(false);
+        account.setLength(4);
+        account.clearUrlComponents();
+        account.addUrlComponent(Account.UrlComponents.Domain);
+        final SecureUTF8String masterPassword = new SecureUTF8String(nonAsciiPassword);
+        assertEquals("e003", saToString(pm.makePassword(masterPassword, account, "passwordmaker.org")));
     }
 }

@@ -464,7 +464,14 @@ public class PasswordMaker {
         SecureByteArray dataBytes = null;
 
         try {
-            masterPasswordBytes = new SecureByteArray(masterPassword);
+            // MD5v0.6 (trim == false && Algo == MD5), isn't suppose to encode into UTF-8 properly!
+            // This little hack gets around that, but just passing the character data which will then just be treated
+            // as unsigned bytes.
+            if ( !account.isTrim() && account.getAlgorithm() == AlgorithmType.MD5 ) {
+                masterPasswordBytes = new SecureByteArray(masterPassword.getData());
+            } else {
+                masterPasswordBytes = new SecureByteArray(masterPassword);
+            }
             dataBytes = new SecureByteArray(data);
 
             if (!account.isHmac()) {

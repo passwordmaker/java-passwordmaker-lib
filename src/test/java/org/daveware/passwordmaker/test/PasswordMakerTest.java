@@ -25,6 +25,7 @@ import org.junit.*;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.daveware.passwordmaker.test.TestUtils.nonAsciiPassword;
 import static org.daveware.passwordmaker.test.TestUtils.saToString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -39,7 +40,6 @@ public class PasswordMakerTest {
     private static PWTest[] tests;
 
     private static void setupPWTest() {
-        final String nonAsciiPassword = "PasswordMaker\u00A9\u20AC\uD852\uDF62";
         tests = new PWTest[]{
 
             // Default account, MD5 length=8
