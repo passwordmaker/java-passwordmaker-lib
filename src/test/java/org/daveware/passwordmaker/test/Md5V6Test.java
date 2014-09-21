@@ -27,7 +27,7 @@ public class Md5V6Test {
         account.clearUrlComponents();
         account.addUrlComponent(Account.UrlComponents.Domain);
         final SecureUTF8String masterPassword = new SecureUTF8String("happy");
-        assertEquals("0617", saToString(pm.makePassword(masterPassword, account, "random.co.uk")));
+        assertEquals("2e6f", saToString(pm.makePassword(masterPassword, account, "random.co.uk")));
     }
 
     @Test
