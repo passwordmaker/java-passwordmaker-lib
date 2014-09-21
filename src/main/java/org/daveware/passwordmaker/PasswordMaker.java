@@ -240,13 +240,16 @@ public class PasswordMaker {
         return output;
     }
 
-    public final String getModifiedInputText(final String inputText, final Account account) {
+    public final String getModifiedInputText(String inputText, final Account account) {
         final Set<UrlComponents> uriComponents = account.getUrlComponents();
         if (uriComponents.isEmpty()) {
             if (account.isDefault())
                 return "";
             else
                 return account.getUrl();
+        }
+        if ( ! account.getUrl().isEmpty() ) {
+            return account.getUrl();
         }
         Matcher matcher = urlRegex.matcher(inputText);
         if (!matcher.matches())
