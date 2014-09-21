@@ -45,7 +45,7 @@ public class AndroidIssue5Test {
     @BeforeClass
     public static void setupClass() throws Exception {
         Logger configure_logger = Logger.getLogger("org.daveware.passwordmaker");
-        configure_logger.setLevel(Level.FINE);
+        configure_logger.setLevel(Level.OFF);
         TestUtils.addBCProvider();
 
         byte[] xml = readResourceAsByteArray("sample3.xml");
