@@ -6,7 +6,7 @@
 
     <groupId>org.passwordmaker</groupId>
     <artifactId>passwordmaker-je-lib</artifactId>
-    <version>0.9.8</version>
+    <version>0.9.9</version>
     <packaging>jar</packaging>
     <name>PasswordMaker Library</name>
     <description>The library portion of the java edition of PasswordMaker.org passwordmaker.  Supports the Android passwordmaker project.</description>

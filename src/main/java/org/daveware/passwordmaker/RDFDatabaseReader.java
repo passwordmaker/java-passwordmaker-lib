@@ -316,7 +316,9 @@ public class RDFDatabaseReader implements DatabaseReader {
 
             account.setUsername(element.getAttribute("NS1:usernameTB").trim());
             account.setModifier(element.getAttribute("NS1:counter").trim());
-            account.setCharacterSet(element.getAttribute("NS1:charset").trim());
+            // If trim is not set, that means only the Hex characterset is used.
+            if ( account.isTrim() )
+                account.setCharacterSet(element.getAttribute("NS1:charset").trim());
             account.setPrefix(element.getAttribute("NS1:prefix").trim());
             account.setSuffix(element.getAttribute("NS1:suffix").trim());
             account.setAutoPop(element.getAttribute("NS1:autoPopulate").trim().compareTo("true") == 0);
@@ -342,6 +344,7 @@ public class RDFDatabaseReader implements DatabaseReader {
 
                 if (pattern.length() > 0 || patternType.length() > 0 || patternEnabled.length() > 0 || patternDesc.length() > 0) {
                     AccountPatternData data = new AccountPatternData();
+                    if ( patternDesc.isEmpty() ) patternDesc = pattern;
                     data.setPattern(pattern);
                     data.setType(AccountPatternType.fromString(patternType));
                     data.setEnabled(patternEnabled.compareTo("true") == 0);

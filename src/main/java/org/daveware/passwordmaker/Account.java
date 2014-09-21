@@ -352,6 +352,8 @@ public final class Account implements Comparable<Account> {
     @SuppressWarnings("UnusedDeclaration")
     public void setTrim(boolean trim) {
         this.trim = trim;
+        if ( ! trim )
+            setCharacterSet(CharacterSets.HEX);
     }
 
     /**
@@ -393,6 +395,7 @@ public final class Account implements Comparable<Account> {
      * @param characterSet the characterSet to set
      */
     public void setCharacterSet(String characterSet) {
+        if ( ! isTrim() ) characterSet = CharacterSets.HEX;
         this.characterSet = characterSet;
     }
 

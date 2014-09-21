@@ -39,6 +39,7 @@ public class PasswordMakerTest {
     private static PWTest[] tests;
 
     private static void setupPWTest() {
+        final String nonAsciiPassword = "PasswordMaker\u00A9\u20AC\uD852\uDF62";
         tests = new PWTest[]{
 
             // Default account, MD5 length=8
@@ -152,6 +153,10 @@ public class PasswordMakerTest {
                     new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL8, "", "", "", false, ""), "123abc!@#/\\'\"", "{}:(&*\\|>\"/_"),
                     new PWTest(new Account("Yummy Humans", "", "yummyhumans.com", "tyrannosaurus@iwishiwasnotextinct.com", AlgorithmType.RIPEMD160, true, true, 12, CharacterSets.BASE_93_SET, LeetType.BOTH, LeetLevel.LEVEL9, "", "", "", false, ""), "123abc!@#/\\'\"", "&|_|8|>|__||"),
 
+
+                    // Test non-ASCII unicode
+                    new PWTest(new Account("Yummy Humans", "", "passwordmaker.org", "", AlgorithmType.MD5, false, true, 8, CharacterSets.BASE_93_SET, LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, ""), nonAsciiPassword, "J>S'p]TP"),
+
                     // Test Url components
                     urlComponentTest("C4jcyJU3OITs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain),
                     urlComponentTest("EkxyAhqWRdNs", "http://subdomain.yummyhumans.com/path/to?everything=true", UrlComponents.Domain, UrlComponents.Subdomain),
@@ -183,13 +188,13 @@ public class PasswordMakerTest {
     // same as above but with an empty UrlComponent set and as a default account.
 
     private static PWTest urlComponentTest(String expected, String url, UrlComponents... components) {
-        Account acc = new Account("Yummy Humans", "", url, "tyrannosaurus@iwishiwasnotextinct.com",
+        Account acc = new Account("Yummy Humans", "", "", "tyrannosaurus@iwishiwasnotextinct.com",
                 AlgorithmType.MD5, false, true, 12, CharacterSets.ALPHANUMERIC,
                 LeetType.NONE, LeetLevel.LEVEL1, "", "", "", false, "");
         for (UrlComponents urlCom : components) {
             acc.addUrlComponent(urlCom);
         }
-        return new PWTest(acc, "password", expected);
+        return new PWTest(acc, "password", url, expected);
     }
 
     /**
@@ -341,7 +346,7 @@ public class PasswordMakerTest {
         a.setLength(16);
         a.setName("Test");
 
-        String value = saToString(pwm.makePassword(new SecureCharArray(""), a, ""));
+        String value = saToString(pwm.makePassword(new SecureUTF8String(""), a, ""));
         // This isn't necessarily required to be this value(EMPTY_STRING), but I just want the future person to
         // realize that they are changing something.
         assertEquals("", value);
@@ -357,7 +362,14 @@ public class PasswordMakerTest {
         for (PWTest test : tests) {
             Account account = test.account;
             PasswordMaker pm = new PasswordMaker();
-            SecureCharArray output = pm.makePassword(new SecureCharArray(test.mpw.toCharArray()), account);
+            final SecureUTF8String output;
+            if ( test.useInputText() ) {
+                output = pm.makePassword(new SecureUTF8String(test.mpw), account, test.inputText);
+            } else {
+                output = pm.makePassword(new SecureUTF8String(test.mpw), account);
+            }
+
+
             if (!Arrays.equals(output.getData(), test.expectedOutput.toCharArray())) {
                 System.out.println("Test" + testNum + test + " failed");
                 System.out.println("Expected: " + test.expectedOutput);
@@ -374,6 +386,7 @@ public class PasswordMakerTest {
     public static class PWTest {
         public Account account;
         public String mpw;
+        public String inputText;
         public String expectedOutput;
 
         public PWTest(Account a, String pw, String expected) {
@@ -381,6 +394,18 @@ public class PasswordMakerTest {
             mpw = pw;
             expectedOutput = expected;
         }
+
+        public PWTest(Account a, String pw, String inputText, String expected) {
+            account = a;
+            mpw = pw;
+            expectedOutput = expected;
+            this.inputText = inputText;
+        }
+
+        public boolean useInputText() {
+            return inputText != null && ! inputText.isEmpty();
+        }
+
 
         @Override
         public String toString() {
@@ -390,7 +415,12 @@ public class PasswordMakerTest {
             retVal.append(", HMAC=").append(account.isHmac());
             retVal.append(", user=").append(account.getUsername());
             retVal.append(", url=").append(account.getUrl());
-            retVal.append(" leetlevel=").append(account.getLeetLevel());
+            retVal.append(", leet=").append(account.getLeetType()).append(":").append(account.getLeetLevel());
+            retVal.append(", trimmed=").append(account.isTrim());
+            retVal.append(", mpw=").append(mpw);
+            if ( useInputText() ) {
+                retVal.append(", inputText=").append(inputText);
+            }
             if (!account.getUrlComponents().isEmpty())
                 retVal.append(" UrlComponents=").append(account.getUrlComponents());
             retVal.append(')');

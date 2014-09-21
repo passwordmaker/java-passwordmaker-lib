@@ -198,7 +198,8 @@ public class AndroidIssue5Test {
         for ( int i = 0; i < patterns.size(); ++i) {
             AccountPatternData expectedPattern = patterns.get(i);
             AccountPatternData actualPattern = actualChild.getPatterns().get(i);
-            assertEquals(expectedPattern.getDesc(), actualPattern.getDesc());
+            String expectedDesc = expectedPattern.getDesc().isEmpty() ? expectedPattern.getPattern() : expectedPattern.getDesc();
+            assertEquals(expectedDesc, actualPattern.getDesc());
             assertEquals(expectedPattern.getPattern(), actualPattern.getPattern());
             assertEquals(expectedPattern.getType(), actualPattern.getType());
             assertEquals(expectedPattern.isEnabled(), actualPattern.isEnabled());
