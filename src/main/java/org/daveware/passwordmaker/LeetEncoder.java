@@ -19,7 +19,7 @@ package org.daveware.passwordmaker;
 
 /**
  * Leet class used for converting SecureCharArray objects to leet-speak.
- * <p/>
+ * <p>
  * This was converted from leet.cpp of the Password Maker CLI version.
  *
  * @author Dave Marotti
@@ -62,7 +62,6 @@ public class LeetEncoder {
      * @param level   What level of leet to use. Each leet corresponds to a different
      *                leet lookup table.
      * @param message The array to convert.
-     * @return A new SecureCharArray object, converted from message.
      * @throws Exception upon sizing error.
      */
     public static void leetConvert(LeetLevel level, SecureCharArray message)

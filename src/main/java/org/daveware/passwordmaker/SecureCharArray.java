@@ -23,15 +23,15 @@ import java.util.Arrays;
 import static org.daveware.passwordmaker.StringEncodingUtils.bytesToCharArrayUTFNIO;
 /**
  * Provides an array capable of erasing the contents upon request.
- * <p/>
+ * <p>
  * It's a very bad idea to store passwords in a java.lang.String object because
  * once that object is created, you cannot guarantee that the contents will be
  * erased. You can't get at the actual bytes inside the String object. Thus you
  * cannot reset all the bytes to 0.
- * <p/>
+ * <p>
  * This object stores a plain array of chars allowing the data to be erased
  * back to 0 at any given time.
- * <p/>
+ * <p>
  * ALWWAYS reset your password storage variables when you are through with them
  * and be very wary of the stack.
  *
@@ -121,7 +121,7 @@ public class SecureCharArray implements CharSequence {
     /**
      * Erases the data in this array by writing a pattern over every element
      * of the array.
-     * <p/>
+     * <p>
      * The pattern part probably isn't needed and probably doesn't do anything
      * but it's there anyway. The important part is to reset all the elements
      * back to 0.
@@ -190,7 +190,7 @@ public class SecureCharArray implements CharSequence {
      * the array as needed.
      *
      * @param arr The copy to use.
-     * @throws Exception
+     * @throws Exception on exception
      */
     public void replace(SecureCharArray arr)
             throws Exception {
@@ -270,9 +270,9 @@ public class SecureCharArray implements CharSequence {
     }
 
     /**
-     * @throws ArrayIndexOutOfBoundsException - if from < 0 or from > original.length()
-     * @throws IllegalArgumentException       - if from > to
-     * @see {@link CharSequence#subSequence(int, int)}
+     * @throws ArrayIndexOutOfBoundsException - if from &lt; 0 or from &gt; original.length()
+     * @throws IllegalArgumentException       - if from &lt; to
+     * @see CharSequence#subSequence(int, int)
      */
     @Override
     public CharSequence subSequence(int start, int end) {

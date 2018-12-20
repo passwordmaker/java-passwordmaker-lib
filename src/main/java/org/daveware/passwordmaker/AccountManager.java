@@ -63,7 +63,9 @@ public class AccountManager implements DatabaseListener {
 
     /**
      * Same as the other version with username being sent null.
-     *
+     * @param masterPassword master password to use
+     * @param inputText the input text
+     * @return the generated password
      * @see #generatePassword(CharSequence, String, String)
      */
     public SecureCharArray generatePassword(CharSequence masterPassword, String inputText) {

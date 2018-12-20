@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 /**
  * Represents a database of accounts.
- * <p/>
+ * <p>
  * An application can register a DatabaseListener to receive events.
  *
  * @author Dave Marotti
@@ -182,6 +182,9 @@ public class Database {
 
     /**
      * The preferred way of setting a global setting.
+     *
+     * @param key the key to use
+     * @param value the value to set
      */
     public void setGlobalSetting(GlobalSettingKey key, String value) {
         setGlobalSetting(key.toString(), value);
@@ -200,6 +203,7 @@ public class Database {
      * The preferred way of getting a global setting value.
      *
      * @param key The key to obtain.
+     * @return the setting obtained
      */
     public String getGlobalSetting(GlobalSettingKey key) {
         if (globalSettings.containsKey(key.toString()))
@@ -249,6 +253,7 @@ public class Database {
 
     /**
      * Adds the default account (used by Firefox).
+     * @throws Exception on exception
      */
     public void addDefaultAccount()
             throws Exception {
@@ -272,6 +277,8 @@ public class Database {
 
     /**
      * Sets the dirty status and notifies listeners.
+     *
+     * @param status the new dirty status
      */
     public void setDirty(boolean status) {
         dirty = status;
@@ -453,7 +460,7 @@ public class Database {
 
     /**
      * Finds the nearest relative of this node.
-     * <p/>
+     * <p>
      * The nearest relative is either the next sibling, previous sibling, or parent in the case
      * where it is an only child.  If it is not found to be a member of this tree, null is returned.
      * If you pass in the root node, null is returned.

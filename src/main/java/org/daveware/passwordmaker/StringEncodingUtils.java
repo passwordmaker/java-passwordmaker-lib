@@ -35,8 +35,8 @@ public class StringEncodingUtils {
     }
 
     /**
-     * @param buffer
-     * @return
+     * @param buffer the buffer to convert
+     * @return the bytes of the buffer
      */
     public static byte[] byteBufferToBytes(ByteBuffer buffer) {
         final byte[] array = buffer.array();
@@ -47,8 +47,8 @@ public class StringEncodingUtils {
 
 
     /**
-     * @param buffer
-     * @return
+     * @param buffer the buffer to convert
+     * @return the char's of the buffer
      */
     public static char[] charBufferToChars(CharBuffer buffer) {
         final char[] array = buffer.array();

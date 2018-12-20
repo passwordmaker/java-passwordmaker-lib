@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 
 /**
  * Implements the DatabaseReader interface to allow reading of RDF files.
- * <p/>
+ * <p>
  * This works by first reading every RDF:Description that can be found and storing
- * the results in a HashMap<String, Account> where the key is the RDF:about
+ * the results in a HashMap&lt;String, Account&gt; where the key is the RDF:about
  * Mozilla-RDF hash thing.  This is then used to build the Account hierarchy by
  * reading in all the RDF:Seq and nested RDF:li nodes.
  *
@@ -61,6 +61,8 @@ public class RDFDatabaseReader implements DatabaseReader {
      * Set whether or not to ignore Accounts which use the old buggy javascript
      * version of HMAC-SHA256.  This defaults to true. If set to false it will
      * cause a fatal exception to be raised and the loading will abort.
+     *
+     * @param b true to ignore, false to abort.
      */
     @SuppressWarnings("UnusedDeclaration")
     public void setIgnoreBuggyJavascript(boolean b) {

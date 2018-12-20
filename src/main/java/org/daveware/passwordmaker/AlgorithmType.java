@@ -17,13 +17,17 @@
  */
 package org.daveware.passwordmaker;
 
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.daveware.passwordmaker.util.Pair;
 
 import static org.daveware.passwordmaker.util.Pair.pair;
 
 /**
  * Object representing an algorithm type.
- * <p/>
+ * <p>
  * All algorithms should be available in both plain and HMAC variants.
  *
  * @author Dave Marotti
@@ -38,14 +42,13 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
     // TODO: MD6, SHA384, SHA512?
     // Any of the weird ones? 
 
-    private static final AlgorithmType[] TYPES = {
-            MD4, MD5, SHA1, RIPEMD160, SHA256
-    };
+    private static final AlgorithmType[] TYPES = calculateAvailableTypes();
 
     private int type;
     private String name;
     private String hmacName;
     private boolean compatible;
+    private boolean available;
 
     private String rdfName;
     private String rdfHmacName;
@@ -56,6 +59,7 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
         compatible = false;
         rdfName = "";
         rdfHmacName = "";
+        available = false;
     }
 
     private AlgorithmType(int i, String n, String hmac, String rdfN, String rdfH, boolean c) {
@@ -65,6 +69,7 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
         compatible = c;
         rdfName = rdfN;
         rdfHmacName = rdfH;
+        available = calculateIfAvailable();
     }
 
     public static AlgorithmType[] getTypes() {
@@ -157,5 +162,50 @@ public class AlgorithmType implements Comparable<AlgorithmType> {
 
     public String getHmacName() {
         return hmacName;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public static AlgorithmType getFirstAvailableForId() {
+        AlgorithmType[] all = {
+                SHA1, SHA256, MD4, MD5, RIPEMD160
+        };
+
+        for (AlgorithmType algorithmType : all) {
+            if (algorithmType.isAvailable()) {
+                return algorithmType;
+            }
+        }
+
+        throw new IllegalStateException("No known algorithm implemented for ID generation");
+    }
+
+    private boolean calculateIfAvailable() {
+        try {
+            MessageDigest.getInstance(name, PasswordMaker.getDefaultCryptoProvider());
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("Tried " + name + " but it is unavailable for provider " +
+                    PasswordMaker.getDefaultCryptoProvider() + ". " + e.getMessage());
+            return false;
+        }
+    }
+
+    private static AlgorithmType[] calculateAvailableTypes() {
+        AlgorithmType[] all = {
+            MD4, MD5, SHA1, RIPEMD160, SHA256
+        };
+
+        List<AlgorithmType> available = new ArrayList<AlgorithmType>();
+        for (AlgorithmType algorithmType : all) {
+            if (algorithmType.isAvailable()) {
+                available.add(algorithmType);
+            }
+        }
+
+        return available.toArray(new AlgorithmType[]{});
     }
 }

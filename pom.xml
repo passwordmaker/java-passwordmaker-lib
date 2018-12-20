@@ -6,7 +6,19 @@
 
     <groupId>org.passwordmaker</groupId>
     <artifactId>passwordmaker-je-lib</artifactId>
-    <version>0.9.9</version>
+    <version>0.9.10</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>6</source>
+                    <target>6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <packaging>jar</packaging>
     <name>PasswordMaker Library</name>
     <description>The library portion of the java edition of PasswordMaker.org passwordmaker.  Supports the Android passwordmaker project.</description>
@@ -74,7 +86,7 @@
     <profiles>
         <profile>
             <!--
-              This profile is intental so that developers don't have to have everything setup to
+              This profile is intentional so that developers don't have to have everything setup to
               build and develop.
             -->
             <id>build-for-central</id>

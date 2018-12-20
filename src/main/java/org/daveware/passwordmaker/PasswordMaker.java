@@ -59,7 +59,7 @@ public class PasswordMaker {
 
     /**
      * Calculates the strength of a password.
-     *
+     * @param pw the password to calculate the strength
      * @return An integer value from 0 to 100.
      */
     public static double calcPasswordStrength(SecureCharArray pw) {
@@ -143,7 +143,7 @@ public class PasswordMaker {
 
     /**
      * Maps an array of characters to another character set.
-     * <p/>
+     * <p>
      * This is the magic which allows an encrypted password to be mapped into a
      * a specific character set.
      *

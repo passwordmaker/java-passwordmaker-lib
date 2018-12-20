@@ -20,6 +20,7 @@ package org.daveware.passwordmaker;
 import java.security.MessageDigest;
 import java.util.*;
 
+import static org.daveware.passwordmaker.AlgorithmType.getFirstAvailableForId;
 import static org.daveware.passwordmaker.ByteArrayUtils.byteArrayToHexString;
 
 /**
@@ -107,6 +108,7 @@ public final class Account implements Comparable<Account> {
      * @param prefix       - the prefix to put in front of every generated password
      * @param suffix       - the suffix to add behind every generated password
      * @param sha256Bug    - has the buggy firefox javascript sha256
+     * @throws Exception on exception.
      */
     public Account(String name, String desc, String url, String username, AlgorithmType algorithm, boolean hmac,
                    boolean trim, int length, String characterSet, LeetType leetType,
@@ -132,7 +134,24 @@ public final class Account implements Comparable<Account> {
     }
 
     /**
-     * Alternate constructor that allows the id to also be supplied. (Still no autopop).
+     * See the other constructor
+     * @param name         - name for the account
+     * @param desc         - description for the account
+     * @param url          - the url of the account
+     * @param username     - the username for the account
+     * @param algorithm    - the algorithm to use against the master password
+     * @param hmac         - should you use the hmac version
+     * @param trim         - the trim the input text
+     * @param length       - the length of the generated password for account
+     * @param characterSet - the characterSet to use for generated password
+     * @param leetType     - leet-ify the generated password
+     * @param leetLevel    - How much leet to use
+     * @param modifier     - this field is to allow for adjustment of the outputted password
+     * @param prefix       - the prefix to put in front of every generated password
+     * @param suffix       - the suffix to add behind every generated password
+     * @param sha256Bug    - has the buggy firefox javascript sha256
+     * @param id           - the id for the account (required to be already generated)
+     * @see #Account(String, String, String, String, AlgorithmType, boolean, boolean, int, String, LeetType, LeetLevel, String, String, String, boolean)
      */
     public Account(String name, String desc, String url, String username, AlgorithmType algorithm, boolean hmac,
                    boolean trim, int length, String characterSet, LeetType leetType,
@@ -159,7 +178,7 @@ public final class Account implements Comparable<Account> {
 
     /**
      * Creates an random ID from a string.
-     * <p/>
+     * <p>
      * This is used to create the ID of the account which should be unique.
      * There's no way for this object to know if it is truly unique so the database
      * or GUI should do a check for uniqueness and re-hash if needed.
@@ -175,7 +194,7 @@ public final class Account implements Comparable<Account> {
 
     /**
      * Creates an ID from a string.
-     * <p/>
+     * <p>
      * This is used to create the ID of the account which should be unique.
      * There's no way for this object to know if it is truly unique so the database
      * or GUI should do a check for uniqueness and re-hash if needed.
@@ -186,7 +205,9 @@ public final class Account implements Comparable<Account> {
      */
     public static String createId(String str)
             throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA1", PasswordMaker.getDefaultCryptoProvider());
+        MessageDigest digest = MessageDigest.getInstance(
+                getFirstAvailableForId().getName(), PasswordMaker.getDefaultCryptoProvider());
+
         return "rdf:#$" + byteArrayToHexString(digest.digest(str.getBytes()));
     }
 
@@ -221,7 +242,7 @@ public final class Account implements Comparable<Account> {
 
     /**
      * Copies the settings (not including children or ID) from another account.
-     * <p/>
+     * <p>
      * LEAVE THIS FUNCTION HERE so it's easy to see if new members are ever added
      * so I don't forget to update it.
      *
@@ -618,7 +639,7 @@ public final class Account implements Comparable<Account> {
     }
 
     /**
-     * Implements the Comparable<Account> interface, this is based first on if the
+     * Implements the Comparable&lt;Account&gt; interface, this is based first on if the
      * account is a folder or not. This is so that during sorting, all folders are
      * first in the list.  Finally, it is based on the name.
      *
